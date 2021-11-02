@@ -35,18 +35,18 @@ https://github.com/AntonSangho/moya-worklog.git
 6. cups 설치
 	`sudo apt-get install cups`
 6. 프린터 드라이버 설치
-	`sh setup_v1.4.1.sh`
+	> sh setup_v1.4.1.sh
 7. pi  권한 획득 
 	`sudo usermod -a -G lpadmin pi`
 8. libcups2-dev 설치 
 	`sudo apt-get install libcups2-dev`
 9. pycups 설치 
-	`sudo pip3 install pycups`
-10. cups 설정
+10. `sudo pip3 install pycups`
+11. cups 설정
 	1. http://localhost:631 접속
 	2. Add printer (USB 연결된 상태)
 	3. Print 사이즈 : 75x150mm설정 
-11. 기본 프린터 설정 
+12. 기본 프린터 설정 
 	`lpoptions -d BIXOLON_SRP-330II`
 12. 부팅파일 설정 
 	1. `sudo vi /etc/rc.local`
