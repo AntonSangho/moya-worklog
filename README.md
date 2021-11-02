@@ -35,7 +35,7 @@ https://github.com/AntonSangho/moya-worklog.git
 6. cups 설치
 	`sudo apt-get install cups`
 6. 프린터 드라이버 설치
-	> sh setup_v1.4.1.sh
+	`sh setup_v1.4.1.sh`
 7. pi  권한 획득 
 	`sudo usermod -a -G lpadmin pi`
 8. libcups2-dev 설치 
