@@ -33,6 +33,7 @@ GPIO.setup(20, GPIO.OUT)
 print("LED on")
 GPIO.output(20, GPIO.HIGH)
 time.sleep(1)
+print(printers)
 
 #os.system('lp /usr/share/cups/data/testprint')
 
@@ -40,7 +41,21 @@ def Printtest(channel):
     print('Printing...')
     conn.printFile('BIXOLON_SRP-330II', random.choice(filelist), "working diary", {})
 
-GPIO.add_event_detect(21, GPIO.RISING, callback=Printtest, bouncetime=2000)
+def cancel_all_jobs(self, printer_id):
+    jobs = self.get_jobs()
+    try:
+        conn = self.get_connection()
+        for job_id in jobs:
+            job = jobs[job_id]
+            if jobs[job_id]['printer-uri'].endswith(printer_id):
+                conn.cancelJob(int(job_id))
+        self.bad_password = False
+    except (cups.IPPError) as e:
+        abort(403)
+
+
+#GPIO.add_event_detect(21, GPIO.RISING, callback=Printtest, bouncetime=2000)
+GPIO.add_event_detect(21, GPIO.RISING, callback=cancel_all_jobs, bouncetime=2000)
 
 while 1:
     time.sleep(1)
