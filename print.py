@@ -18,11 +18,11 @@ import random
 
 conn = cups.Connection()
 printers = conn.getPrinters()
-file1 = "/home/pi/moya_attendance/image/w1.png"
-file2 = "/home/pi/moya_attendance/image/w2.png"
-file3 = "/home/pi/moya_attendance/image/w3.png"
-file4 = "/home/pi/moya_attendance/image/w4.png"
-file5 = "/home/pi/moya_attendance/image/w5.png"
+file1 = "/home/pi/moya-worlog/image/w1.png"
+file2 = "/home/pi/moya-worlog/image/w2.png"
+file3 = "/home/pi/moya-worlog/image/w3.png"
+file4 = "/home/pi/moya-worlog/image/w4.png"
+file5 = "/home/pi/moya-worlog/image/w5.png"
 filelist = [file1, file2, file3, file4, file5]
 
 GPIO.setmode(GPIO.BCM)
