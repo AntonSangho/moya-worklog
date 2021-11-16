@@ -14,14 +14,16 @@
 
 ### 회로연결 
 **Button circuit**
+```
 GPIO21 - 1k Ohm - ON (button)
 GPIO21 - 100nF(104) -  GND 
 3.3V - 1k Ohm - COM (button) 
-
-** LED circuit**
+```
+**LED circuit**
+```
 GPIO20 - LED anode 
 GND - LED cathode 
-
+```
 ### 실행
 `python3 print.ty`
 
@@ -56,6 +58,14 @@ https://github.com/AntonSangho/moya-worklog.git
 1.	라즈베리파이 전원 연결하기. 
 2.	흰색 불이 들어오면 버튼을 누른다. 
 
+## 작업일지파일 만드는 법(illustrator2022 기준) 
+1. 작업일지_원본.ai 파일 열기
+2. 내보내기 -> 내보내기 형식
+3. 파일명 수정
+4. 대지사용 체크 후 범위설정
+5. 내보내기 누르기
+6. 해상도: 고(300ppi) / 앤티 앨리어싱: 아트최적화 / 배경색: 흰색 
+7. 확인 
 
 ## 파일 정보 및 목록 
 - 실행파일
