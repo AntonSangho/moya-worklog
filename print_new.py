@@ -5,7 +5,7 @@ cups-devel(libcups-2dev)
 python3-devel (python3 dev)
 
 Printe on demand with rasberrypi (https://www.hackster.io/glowascii/print-on-demand-with-raspi-d74619)
-GPIO pin:
+GPIO pin: 20, 21
 
 """
 # !/bin/python
@@ -14,7 +14,7 @@ import RPi.GPIO as GPIO
 import time
 import os
 import cups
-import random 
+import random
 
 conn = cups.Connection()
 printers = conn.getPrinters()
@@ -49,4 +49,4 @@ while True:
 		GPIO.output(led_pin, False) # LED off when the button is pressed.
 		time.sleep(1)
 	else:
-		GPIO.output(led_pin, True) 		
+		GPIO.output(led_pin, True)
