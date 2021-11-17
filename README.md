@@ -11,6 +11,7 @@
 | 납작소켓 커넥터 와이어 | 2ea |
 | 1K ohm 저항 | 2ea |
 | 100nF 커패시터 (104) | 1ea |
+| 60mm LED 아케이드 버튼 스위치 (SZH-LC043) | 1ea |
 
 ### 회로연결 
 **Button circuit**
