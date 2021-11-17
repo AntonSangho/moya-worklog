@@ -18,9 +18,6 @@ import random
 
 conn = cups.Connection()
 printers = conn.getPrinters()
-button_pin = 21
-led_pin = 20
-
 file1 = "/home/pi/moya-worklog/image/w1_tt.png"
 file2 = "/home/pi/moya-worklog/image/w2_tt.png"
 file3 = "/home/pi/moya-worklog/image/w3_tt.png"
@@ -29,24 +26,21 @@ file5 = "/home/pi/moya-worklog/image/w5_tt.png"
 filelist = [file1, file2, file3, file4, file5]
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set button pin in software pull down.
+GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 GPIO.setwarnings(False)
-GPIO.setup(led_pin, GPIO.OUT, initial=1)
+GPIO.setup(20, GPIO.OUT)
 print("LED on")
-GPIO.output(led_pin, True) # LED on in the starts.
+GPIO.output(20, GPIO.HIGH)
+time.sleep(1)
 
 #os.system('lp /usr/share/cups/data/testprint')
 
-def PrintJob(channel):
+def Printtest(channel):
     print('Printing...')
     conn.printFile('BIXOLON_SRP-330II', random.choice(filelist), "working diary", {})
 
-while True:
-	if GPIO.input(button_pin) == True:
-		print('button pressed')
-		PrintJob(button_pin)
-		GPIO.output(led_pin, False) # LED off when the button is pressed.
-		time.sleep(1)
-	else:
-		GPIO.output(led_pin, True) 		
+GPIO.add_event_detect(21, GPIO.RISING, callback=Printtest, bouncetime=2000)
+
+while 1:
+    time.sleep(1)
