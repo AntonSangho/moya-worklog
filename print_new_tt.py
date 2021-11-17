@@ -21,11 +21,11 @@ printers = conn.getPrinters()
 button_pin = 21
 led_pin = 20
 
-file1 = "/home/pi/moya-worklog/image/w1.png"
-file2 = "/home/pi/moya-worklog/image/w2.png"
-file3 = "/home/pi/moya-worklog/image/w3.png"
-file4 = "/home/pi/moya-worklog/image/w4.png"
-file5 = "/home/pi/moya-worklog/image/w5.png"
+file1 = "/home/pi/moya-worklog/image/w1_tt.png"
+file2 = "/home/pi/moya-worklog/image/w2_tt.png"
+file3 = "/home/pi/moya-worklog/image/w3_tt.png"
+file4 = "/home/pi/moya-worklog/image/w4_tt.png"
+file5 = "/home/pi/moya-worklog/image/w5_tt.png"
 filelist = [file1, file2, file3, file4, file5]
 
 GPIO.setmode(GPIO.BCM)
