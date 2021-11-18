@@ -13,18 +13,6 @@
 | 100nF 커패시터 (104) | 1ea |
 | 60mm LED 아케이드 버튼 스위치 (SZH-LC043) | 1ea |
 
-### 회로연결 
-**Button circuit**
-```
-GPIO21 - 1k Ohm - ON (button)
-GPIO21 - 100nF(104) -  GND 
-3.3V - 1k Ohm - COM (button) 
-```
-**LED circuit**
-```
-GPIO20 - LED anode 
-GND - LED cathode 
-```
 ### 실행
 `python3 print.ty`
 
