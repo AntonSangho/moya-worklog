@@ -37,6 +37,8 @@ print("LED on")
 GPIO.output(led_pin, True) # LED on in the starts.
 
 #os.system('lp /usr/share/cups/data/testprint')
+#이전에 있던 job을 제거
+os.system('cancel -a')
 
 def PrintJob(channel):
     print('Printing...')
