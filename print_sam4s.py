@@ -20,7 +20,7 @@ from PIL import Image
 
 #conn = cups.Connection()
 #printers = conn.getPrinters()
-p = printer.Usb(0x1c8a, 0x3a0e, 0, 0, 0x02)
+p = printer.Usb(0x1c8a, 0x3a0e, in_ep=0x81, out_ep=0x02)
 
 file1 = "/home/pi/moya-worklog/image/w1.png"
 file2 = "/home/pi/moya-worklog/image/w2.png"
