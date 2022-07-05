@@ -60,6 +60,9 @@ https://github.com/AntonSangho/moya-worklog.git
 https://github.com/AntonSangho/moya-worklog.git
 4. pip 설치 
 	`sudo apt-get install python3-pip`
+	`sudo pip3 install escpos`
+	`sudo apt-get install libopenjp2-7`
+	`sudo apt install libtiff5`
 5. requirement로 설치 
 	`pip install -r requirements.txt `
 6. 부팅파일 설정 
