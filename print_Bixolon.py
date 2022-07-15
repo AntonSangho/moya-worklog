@@ -23,11 +23,12 @@ from PIL import Image
 p = printer.Usb(0x1504, 0x006e, in_ep=0x81, out_ep=0x02)
 
 file1 = "/home/pi/moya-worklog/image/w1.png"
-file2 = "/home/pi/moya-worklog/image/w2.png"
+#file2 는 제거
+#file2 = "/home/pi/moya-worklog/image/w2.png"
 file3 = "/home/pi/moya-worklog/image/w3.png"
 file4 = "/home/pi/moya-worklog/image/w4.png"
 file5 = "/home/pi/moya-worklog/image/w5.png"
-filelist = [file1, file2, file3, file4, file5]
+filelist = [file1, file3, file4, file5]
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -40,17 +41,13 @@ time.sleep(1)
 
 #os.system('lp /usr/share/cups/data/testprint')
 
-def Printtest(channel):
-    print('Printing...')
-    conn.printFile('BIXOLON_SRP-330II', random.choice(filelist), "working diary", {})
-
-def Print_sam4s(channel):
+def Print(channel):
 	im = Image.open(random.choice(filelist))	
 	out = im.resize((480, 1000))
 	p.image(out)
 	p.cut()
 
-GPIO.add_event_detect(21, GPIO.RISING, callback=Print_sam4s, bouncetime=2000)
+GPIO.add_event_detect(21, GPIO.RISING, callback=Print, bouncetime=2000)
 
 while 1:
     time.sleep(1)
