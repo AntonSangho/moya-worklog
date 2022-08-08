@@ -18,23 +18,7 @@ import random
 from escpos import *
 from PIL import Image
 from escpos.printer import Serial
-
-#conn = cups.Connection()
-#printers = conn.getPrinters()
-#p = printer.Usb(0x1c8a, 0x3a0e, in_ep=0x81, out_ep=0x02)
-
-""" 9600 Baud, 8N1, Flow Control Enabled """
-p = Serial(devfile='/dev/serial0',
-           baudrate=9600,
-           bytesize=8,
-           parity='N',
-           stopbits=1,
-           timeout=1.00,
-           dsrdtr=True)
-
-#p.text("Hello World\n")
-#p.qr("You can readme from your smartphone")
-#p.cut()
+from art import *
 
 file1 = "/home/pi/moya-worklog/image/w1.png"
 file2 = "/home/pi/moya-worklog/image/w2.png"
@@ -51,8 +35,6 @@ GPIO.setup(20, GPIO.OUT)
 print("LED on")
 GPIO.output(20, GPIO.HIGH)
 time.sleep(1)
-
-#os.system('lp /usr/share/cups/data/testprint')
 
 #def Printtest(channel):
 #    print('Printing...')
@@ -72,16 +54,16 @@ def Print_serial(channel):
            stopbits=1,
            timeout=1.00,
            dsrdtr=True)
-    im = Image.open(random.choice(filelist))
+    #im = Image.open(random.choice(filelist))
     ## 프린터 폭최대 350
-    out = im.resize((350, 400))
-    p.image(out)
+    #out = im.resize((350, 700))
+    #p.image(out)
+    art_1=text2art('''Space
+    OH
+    LEE''',"rnd-small")
+    p.text(art_1)
     p.cut()
-#    p.text("Hello World\n")
-#    p.qr("You can readme from your smartphone")
-#    p.cut()
 
-#GPIO.add_event_detect(21, GPIO.RISING, callback=Print_sam4s, bouncetime=2000)
 GPIO.add_event_detect(21, GPIO.RISING, callback=Print_serial, bouncetime=2000)
 
 while 1:
