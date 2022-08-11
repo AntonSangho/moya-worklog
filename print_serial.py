@@ -18,7 +18,7 @@ import random
 from escpos import *
 from PIL import Image
 from escpos.printer import Serial
-from art import *
+#from art import *
 
 file1 = "/home/pi/moya-worklog/image/w1.png"
 file2 = "/home/pi/moya-worklog/image/w2.png"
@@ -58,10 +58,7 @@ def Print_serial(channel):
     ## 프린터 폭최대 350
     #out = im.resize((350, 700))
     #p.image(out)
-    art_1=text2art('''Space
-    OH
-    LEE''',"rnd-small")
-    p.text(art_1)
+    p.text("anton\n")
     p.cut()
 
 GPIO.add_event_detect(21, GPIO.RISING, callback=Print_serial, bouncetime=2000)
