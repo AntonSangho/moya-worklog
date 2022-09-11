@@ -6,11 +6,12 @@ currentDate = date.today()
 
 con = sqlite3.connect('moya.db')
 cur = con.cursor()
-SelectQuery = """SELECT id FROM worklog ORDER by rowid DESC LIMIT 1;"""
+SelectQuery = """SELECT id, sqltime FROM worklog3 ORDER by rowid DESC LIMIT 1;"""
 result = cur.execute(SelectQuery)
 rows = result.fetchall()
 for row in rows:
     print(row[0])
+    print(row[1])
 
 #cur.execute('INSERT INTO worklog (date) VALUES(?)',(currentDateTime))
 #con.commit()
