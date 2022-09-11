@@ -13,8 +13,8 @@ GPIO pin:
 import RPi.GPIO as GPIO
 import time
 import os
-import cups
-import random 
+#import cups
+import random
 from escpos import *
 from PIL import Image
 
@@ -46,7 +46,7 @@ def Printtest(channel):
     conn.printFile('BIXOLON_SRP-330II', random.choice(filelist), "working diary", {})
 
 def Print_sam4s(channel):
-	im = Image.open(random.choice(filelist))	
+	im = Image.open(random.choice(filelist))
 	out = im.resize((480, 1000))
 	p.image(out)
 	p.cut()
