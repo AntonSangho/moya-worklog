@@ -39,7 +39,7 @@ GPIO.output(20, GPIO.HIGH)
 time.sleep(1)
 
 #os.system('lp /usr/share/cups/data/testprint')
-os.system('cancel -a')
+#os.system('cancel -a')
 
 def Printtest(channel):
     print('Printing...')
