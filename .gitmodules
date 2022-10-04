@@ -1,0 +1,3 @@
+[submodule "pi-power-button"]
+	path = pi-power-button
+	url = https://github.com/Howchoo/pi-power-button.git
