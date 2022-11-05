@@ -65,7 +65,7 @@
 5. libcups2-dev 설치  
 	`sudo apt-get install libcups2-dev`
 6. pycups 설치  
-	`sudo pip3 install pycups``sudo apt install libtiff5`
+	`sudo pip3 install pycups`
 7. requirement로 설치 
 	`pip install -r requirements.txt `
 8. 부팅파일 설정 
