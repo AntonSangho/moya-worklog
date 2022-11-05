@@ -69,6 +69,8 @@
 	1. `sudo vi /etc/rc.local`
 	2. Exit 0 전에 아래 코드 추가
 		`python3 /home/pi/moya-worklog/print_sam4s.py &`
+7. 리셋버튼 설치
+	`./pi-power-button/script/install`
 
 ## 사용법
 1.	라즈베리파이 전원 연결하기. 
