@@ -25,7 +25,7 @@
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
 2. 라즈베리파이 ssh, spi enable 
 3. 원격 다운로드 
-https://github.com/AntonSangho/moya-worklog.git
+	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
 4. 드라이버 파일 압축해제
 	`unzip Software_BixolonCupsDrv_Linux_v1.3.5.1.zip .`
 6. cups 설치 
@@ -56,8 +56,8 @@ https://github.com/AntonSangho/moya-worklog.git
 ## 설치방법 [ Sam4s Giant 100]
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
-3. 원격 다운로드 
-https://github.com/AntonSangho/moya-worklog.git
+3. Git 설치 후 원격 다운로드 
+	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
 4. pip 설치 
 	`sudo apt-get install python3-pip`
 	`sudo pip3 install escpos`
