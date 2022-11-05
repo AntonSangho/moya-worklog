@@ -62,14 +62,17 @@
 	`sudo apt-get install python3-pip`
 	`sudo pip3 install escpos`
 	`sudo apt-get install libopenjp2-7`
-	`sudo apt install libtiff5`
-5. requirement로 설치 
+5. libcups2-dev 설치  
+	`sudo apt-get install libcups2-dev`
+6. pycups 설치  
+	`sudo pip3 install pycups``sudo apt install libtiff5`
+7. requirement로 설치 
 	`pip install -r requirements.txt `
-6. 부팅파일 설정 
+8. 부팅파일 설정 
 	1. `sudo vi /etc/rc.local`
 	2. Exit 0 전에 아래 코드 추가
 		`python3 /home/pi/moya-worklog/print_sam4s.py &`
-7. 리셋버튼 설치
+9. 리셋버튼 설치
 	`./pi-power-button/script/install`
 
 ## 사용법
