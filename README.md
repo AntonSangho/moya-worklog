@@ -77,12 +77,15 @@
 
 ## 설치방법 [ Odroid C4 + Sam4s Giant 100]
 ### pin설정 
-Reset Button GPIO: #11(479)
-Reset Button Active: #9(GND)
-LED Positive : #1 (3.3V)
-LED Negative : #6 (GND) 
-Print Button GPIO: #25
-Print Button LED: #8
+| Name | GPIO# |  
+| ----------- | ----------- | 
+| Reset Button GPIO | 11(479) |  
+| Reset Button Active | 9(GND) |
+| LED Positive | 1(3.3V) |
+| LED Negative | 6(GND) |
+| Print Button GPIO | 25 |
+| Print Button LED | 8 |
+
 [BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
 
 1. Ubuntu 이미지 준비
