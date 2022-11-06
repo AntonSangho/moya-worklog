@@ -76,7 +76,7 @@
 	`./pi-power-button/script/install`
 
 ## 설치방법 [ Odroid C4 + Sam4s Giant 100]
-# pin설정 
+### pin설정 
 Reset Button GPIO: #11(479)
 Reset Button Active: #9(GND)
 LED Positive : #1 (3.3V)
