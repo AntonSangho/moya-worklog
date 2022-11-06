@@ -54,7 +54,7 @@
 		`python3 /home/pi/moya-worklog/print.py &`
 
 ## 설치방법 [ Sam4s Giant 100]
-1. 라즈베리파이 imge 준비 : Raspbian 32-bit Lite ver (2022-04-04)
+1. 라즈베리파이 이미지 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
 3. Git 설치 후 원격 다운로드 
 	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
@@ -74,6 +74,25 @@
 		`python3 /home/pi/moya-worklog/print_sam4s.py &`
 9. 리셋버튼 설치
 	`./pi-power-button/script/install`
+
+## 설치방법 [ Odroid C4 + Sam4s Giant 100]
+# pin설정 
+Reset Button GPIO: #11(479)
+Reset Button Active: #9(GND)
+LED Positive : #1 (3.3V)
+LED Negative : #6 (GND) 
+Print Button GPIO: #25
+Print Button LED: #8
+[BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
+
+1. Ubuntu 이미지 준비
+2. uart 통신을 통해서 ip address확인 후 ssh 접속
+3. 리셋버튼 설치[참고자료](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
+boot.ini에 setenv bootargs 아래 세줄 추가
+### in case of GPIOX.3 (Pin 11) of 2x20 pins connector
+setenv gpiopower "479"
+setenv bootargs ${bootargs} gpiopower=${gpiopower}
+
 
 ## 사용법
 1.	라즈베리파이 전원 연결하기. 
