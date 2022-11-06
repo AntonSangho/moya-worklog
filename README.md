@@ -91,13 +91,10 @@
 1. Ubuntu 이미지 준비
 2. uart 통신을 통해서 ip address확인 후 ssh 접속
 3. 리셋버튼 설치
-boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 세줄 추가
+boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
 
----
-### in case of GPIOX.3 (Pin 11) of 2x20 pins connector
-setenv gpiopower "479"
-setenv bootargs ${bootargs} gpiopower=${gpiopower}
----
+- setenv gpiopower "479"
+- setenv bootargs ${bootargs} gpiopower=${gpiopower}
 
 
 [참고자료](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
