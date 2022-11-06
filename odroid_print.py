@@ -36,19 +36,52 @@ file5 = "/root/moya-worklog/image/w5_2022.png"
 filelist = [file1, file2, file3, file4, file5]
 
 #GPIO.setmode(GPIO.BCM)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 #GPIO.setup(20, GPIO.OUT)
-GPIO.setup(13, GPIO.OUT)
-print("LED on")
+#GPIO.setup(13, GPIO.OUT)
+#print("LED on")
 #GPIO.output(20, GPIO.HIGH)
-GPIO.output(13, GPIO.HIGH)
-time.sleep(1)
+#GPIO.output(13, GPIO.HIGH)
+#time.sleep(1)
 
 #os.system('lp /usr/share/cups/data/testprint')
 #os.system('cancel -a')
+
+IRQ_GPIO_PIN = 25
+LED_GPIO_PIN = 21
+#IRQ_EDGE = GPIO.FALLING
+IRQ_EDGE = GPIO.RISING
+count = 0
+
+def handler(channel):
+    global count
+
+    count += 1
+
+def print_status():
+    global count
+    #GPIO.digitalWrite(0, 1)
+    print(count)
+    count = 0
+
+if __name__ == '__main__':
+    GPIO.setmode(GPIO.BCM)
+    #GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    #GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
+    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=handler)
+
+    print('Press Ctrl-C to exit')
+    try:
+        while True:
+            time.sleep(1)
+            print_status()
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+        sys.exit(0)
 
 def Printtest(channel):
     print('Printing...')
@@ -62,7 +95,10 @@ def Print_sam4s(channel):
 
 
 #Print_sam4s(0)
-GPIO.add_event_detect(21, GPIO.RISING, callback=Print_sam4s, bouncetime=2000)
+#GPIO.add_event_detect(21, GPIO.RISING, callback=Print_sam4s, bouncetime=2000)
 
-while 1:
-    time.sleep(1)
+#while 1:
+#    time.sleep(1)
+
+
+
