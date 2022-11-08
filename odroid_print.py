@@ -51,7 +51,7 @@ filelist = [file1, file2, file3, file4, file5]
 #os.system('cancel -a')
 
 IRQ_GPIO_PIN = 25
-LED_GPIO_PIN = 21
+LED_GPIO_PIN = 8
 #IRQ_EDGE = GPIO.FALLING
 IRQ_EDGE = GPIO.RISING
 count = 0
@@ -63,7 +63,7 @@ def handler(channel):
 
 def print_status():
     global count
-    #GPIO.digitalWrite(0, 1)
+    GPIO.output(LED_GPIO_PIN, GPIO.HIGH)
     print(count)
     count = 0
 
@@ -71,8 +71,9 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BCM)
     #GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    #GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
+    GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
     GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=handler)
+    
 
     print('Press Ctrl-C to exit')
     try:
@@ -80,6 +81,7 @@ if __name__ == '__main__':
             time.sleep(1)
             print_status()
     except KeyboardInterrupt:
+        GPIO.output(LED_GPIO_PIN, GPIO.LOW)
         GPIO.cleanup()
         sys.exit(0)
 

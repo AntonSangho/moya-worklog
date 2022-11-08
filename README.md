@@ -54,7 +54,7 @@
 		`python3 /home/pi/moya-worklog/print.py &`
 
 ## 설치방법 [ Sam4s Giant 100]
-1. 라즈베리파이 imge 준비 : Raspbian 32-bit Lite ver (2022-04-04)
+1. 라즈베리파이 이미지 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
 3. Git 설치 후 원격 다운로드 
 	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
@@ -75,10 +75,37 @@
 9. 리셋버튼 설치(참고링크)[https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi]
 	`./pi-power-button/script/install`
 
+<<<<<<< HEAD
 10. 부팅 확인 led 설치: /boot/config.txt 파일에 아래 추가(참고)[https://howchoo.com/g/ytzjyzy4m2e/build-a-simple-raspberry-pi-led-power-status-indicator#enable-the-gpio-serial-port]  
 	`enable_uart = 1`
 
 
+=======
+## 설치방법 [ Odroid C4 + Sam4s Giant 100]
+### pin설정 
+| Name | GPIO# |  
+| ----------- | ----------- | 
+| Reset Button GPIO | 11(479) |  
+| Reset Button Active | 9(GND) |
+| LED Positive | 1(3.3V) |
+| LED Negative | 6(GND) |
+| Print Button GPIO | 25 |
+| Print Button LED | 8 |
+
+[BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
+
+1. Ubuntu 이미지 준비
+2. uart 통신을 통해서 ip address확인 후 ssh 접속
+3. 리셋버튼 설치
+boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
+
+- setenv gpiopower "479"
+- setenv bootargs ${bootargs} gpiopower=${gpiopower}
+
+
+[참고자료](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
+
+>>>>>>> origin/develop
 ## 사용법
 1.	라즈베리파이 전원 연결하기. 
 2.	흰색 불이 들어오면 버튼을 누른다. 
