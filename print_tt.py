@@ -35,6 +35,8 @@ GPIO.output(20, GPIO.HIGH)
 time.sleep(1)
 
 #os.system('lp /usr/share/cups/data/testprint')
+#이전에 있던 job을 제거
+os.system('cancel -a')
 
 def Printtest(channel):
     print('Printing...')
