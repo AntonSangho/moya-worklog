@@ -18,9 +18,11 @@ import random
 from escpos import *
 from PIL import Image
 
-#conn = cups.Connection()
-#printers = conn.getPrinters()
+# Sam4s Giant100 printer
 p = printer.Usb(0x1c8a, 0x3a0e, in_ep=0x81, out_ep=0x02)
+# Bixolon printer
+#p = printer.Usb(0x1504, 0x006e, in_ep=0x81, out_ep=0x02)
+
 
 file1 = "/home/pi/moya-worklog/image/w1_2022.png"
 file2 = "/home/pi/moya-worklog/image/w2_2022.png"

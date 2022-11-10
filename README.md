@@ -18,11 +18,9 @@
 
 ### 실행
 1. Bixolon 버전 :
-	`python3 print.py` 
-2. 티티섬버전 :
-	`python3 print_tt.py`
-3. sam4s 버전: 
-	`python3 print_sam4s.py`
+	`sudo python3 print_Bixolon.py` 
+2. sam4s 버전: 
+	`sudo python3 print_sam4s.py`
 
 ## 설치안내 [ Bixolon SRP-330II ]
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
