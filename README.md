@@ -75,11 +75,10 @@
 	1. `sudo vi /etc/rc.local`
 	2. Exit 0 전에 아래 코드 추가
 		`python3 /home/pi/moya-worklog/print_sam4s.py &`
-9. 리셋버튼 설치(참고링크)[https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi]
+9. [리셋버튼 설치](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
 	`./pi-power-button/script/install`
 
-<<<<<<< HEAD
-10. 부팅 확인 led 설치: /boot/config.txt 파일에 아래 추가(참고)[https://howchoo.com/g/ytzjyzy4m2e/build-a-simple-raspberry-pi-led-power-status-indicator#enable-the-gpio-serial-port]  
+10. [부팅 확인 led 설치](https://howchoo.com/g/ytzjyzy4m2e/build-a-simple-raspberry-pi-led-power-status-indicator#enable-the-gpio-serial-port)  
 	`enable_uart = 1`
 
 
