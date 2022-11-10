@@ -96,19 +96,16 @@
 
 1. Ubuntu 이미지 준비
 2. uart 통신을 통해서 ip address확인 후 ssh 접속
-3. 리셋버튼 설치
+3. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
 boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
 
 - setenv gpiopower "479"
 - setenv bootargs ${bootargs} gpiopower=${gpiopower}
 
 
-[참고자료](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
-
->>>>>>> origin/develop
 ## 사용법
-1.	라즈베리파이 전원 연결하기. 
-2.	흰색 불이 들어오면 버튼을 누른다. 
+1. 라즈베리파이 전원 연결하기. 
+2. 흰색 불이 들어오면 버튼을 누른다. 
 
 ## 작업일지파일 만드는 법(illustrator2022 기준) 
 1. 작업일지_원본.ai 파일 열기
