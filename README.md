@@ -1,10 +1,20 @@
 # 모야작업일지 
 라즈베리파이로 특정 파일을 프린트를 통해 출력하는 장치 
-# 사진
 <img width="50%" src="https://user-images.githubusercontent.com/8589992/174252878-1f55046e-c069-4821-acf7-9d2b71925bf2.jpg" />
 
-## 구성 및 필수 조건 
-### BOM
+## pin설정 
+| Name | GPIO# |  
+| ----------- | ----------- | 
+| Reset Button GPIO | 11(479) |  
+| Reset Button Active | 9(GND) |
+| LED Positive | 1(3.3V) |
+| LED Negative | 6(GND) |
+| Print Button GPIO | 25 |
+| Print Button LED | 8 |
+
+[BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
+
+## BOM
 
 | 부품명 | 수량 |  
 | ----------- | ----------- | 
@@ -80,20 +90,7 @@
     `enable_uart = 1`
 
 
-=======
 ## 설치방법 [ Odroid C4 + Sam4s Giant 100]
-### pin설정 
-| Name | GPIO# |  
-| ----------- | ----------- | 
-| Reset Button GPIO | 11(479) |  
-| Reset Button Active | 9(GND) |
-| LED Positive | 1(3.3V) |
-| LED Negative | 6(GND) |
-| Print Button GPIO | 25 |
-| Print Button LED | 8 |
-
-[BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
-
 1. Ubuntu 이미지 준비
 2. uart 통신을 통해서 ip address확인 후 ssh 접속
 3. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
