@@ -2,6 +2,9 @@
 <img width="50%" src="https://user-images.githubusercontent.com/8589992/174252878-1f55046e-c069-4821-acf7-9d2b71925bf2.jpg" />
 라즈베리파이와 같은 리눅스 소형 컴퓨터로 특정 파일을 영수증 프린트를 통해 출력하는 장치.  
 
+## Wiring 
+<img src="/Schmatic/Wiring_v1.jpg" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
+
 ## Pin Map 
 ### Raspberry Pi
 | Name | GPIO# |  
