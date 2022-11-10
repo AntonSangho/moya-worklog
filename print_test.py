@@ -53,7 +53,7 @@ def print_test(channel):
     p.text(str(count) + "\n")
     p.cut()
 
-GPIO.add_event_detect(21, GPIO.RISING, callback=print_sam4s, bouncetime=2000)
+GPIO.add_event_detect(21, GPIO.RISING, callback=print_test, bouncetime=2000)
 
 try:
     while True:
