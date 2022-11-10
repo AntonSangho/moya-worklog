@@ -25,20 +25,20 @@
 ## 설치안내 [ Bixolon SRP-330II ]
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
 2. 라즈베리파이 ssh, spi enable 
-3. 원격 다운로드 
-	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
-4. 드라이버 파일 압축해제
-	`unzip Software_BixolonCupsDrv_Linux_v1.3.5.1.zip .`
-6. cups 설치 
-	`sudo apt-get install cups`
-7. pip 설치 
-	`sudo apt-get install python3-pip`
-8. escpos 설치 
-	`sudo pip3 install escpos`
-6. 프린터 드라이버 설치
-	`sh setup_v1.4.1.sh`
-7. pi  권한 획득 
-	`sudo usermod -a -G lpadmin pi`
+3. 원격 다운로드  
+    `git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
+4. 드라이버 파일 압축해제  
+    `unzip Software_BixolonCupsDrv_Linux_v1.3.5.1.zip .`
+6. cups 설치  
+    `sudo apt-get install cups`
+7. pip 설치  
+    `sudo apt-get install python3-pip`
+8. escpos 설치  
+    `sudo pip3 install escpos`
+6. 프린터 드라이버 설치  
+    `sh setup_v1.4.1.sh`
+7. pi  권한 획득  
+    `sudo usermod -a -G lpadmin pi`
 8. libcups2-dev 설치  
 	`sudo apt-get install libcups2-dev`
 9. pycups 설치  
@@ -47,37 +47,37 @@
 	1. http://localhost:631 접속
 	2. Add printer (USB 연결된 상태)
 	3. Print 사이즈 : 75x150mm설정 
-11. 기본 프린터 설정 
-	`lpoptions -d BIXOLON_SRP-330II`
+11. 기본 프린터 설정  
+    `lpoptions -d BIXOLON_SRP-330II`
 12. 부팅파일 설정 
 	1. `sudo vi /etc/rc.local`
-	2. Exit 0 전에 아래 코드 추가
-		`python3 /home/pi/moya-worklog/print.py &`
+	2. Exit 0 전에 아래 코드 추가  
+        `python3 /home/pi/moya-worklog/print.py &`
 
 ## 설치방법 [ Sam4s Giant 100]
 1. 라즈베리파이 이미지 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
-3. Git 설치 후 원격 다운로드 
-	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
-4. pip 설치 
-	`sudo apt-get install python3-pip`
-	`sudo pip3 install escpos`
+3. Git 설치 후 원격 다운로드  
+    `git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
+4. pip 설치  
+    `sudo apt-get install python3-pip`  
+	`sudo pip3 install escpos`  
 	`sudo apt-get install libopenjp2-7`
 5. libcups2-dev 설치  
 	`sudo apt-get install libcups2-dev`
 6. pycups 설치  
 	`sudo pip3 install pycups`
-7. requirement로 설치 
-	`pip install -r requirements.txt `
+7. requirement로 설치  
+    `pip install -r requirements.txt `
 8. 부팅파일 설정 
 	1. `sudo vi /etc/rc.local`
-	2. Exit 0 전에 아래 코드 추가
-		`python3 /home/pi/moya-worklog/print_sam4s.py &`
-9. [리셋버튼 설치](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)
-	`./pi-power-button/script/install`
+	2. Exit 0 전에 아래 코드 추가  
+        `python3 /home/pi/moya-worklog/print_sam4s.py &`
+9. [리셋버튼 설치](https://howchoo.com/g/mwnlytk3zmm/how-to-add-a-power-button-to-your-raspberry-pi)  
+    `./pi-power-button/script/install`
 
 10. [부팅 확인 led 설치](https://howchoo.com/g/ytzjyzy4m2e/build-a-simple-raspberry-pi-led-power-status-indicator#enable-the-gpio-serial-port)  
-	`enable_uart = 1`
+    `enable_uart = 1`
 
 
 =======
