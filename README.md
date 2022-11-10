@@ -1,8 +1,21 @@
-# 모야작업일지 
-라즈베리파이로 특정 파일을 프린트를 통해 출력하는 장치 
+## 프로젝트 설명 
 <img width="50%" src="https://user-images.githubusercontent.com/8589992/174252878-1f55046e-c069-4821-acf7-9d2b71925bf2.jpg" />
+라즈베리파이와 같은 리눅스 소형 컴퓨터로 특정 파일을 영수증 프린트를 통해 출력하는 장치.  
 
-## pin설정 
+## Pin Map 
+### Raspberry Pi
+| Name | GPIO# |  
+| ----------- | ----------- | 
+| Reset Button GPIO | 3 |  
+| Reset Button Active | GND |
+| Power LED Positive | 6 |
+| Power LED Negative | GND |
+| Print Button GPIO | 21 |
+| Print Button LED | 20 |
+
+[GPIO](https://pinout.xyz/)
+
+### Odroid C4
 | Name | GPIO# |  
 | ----------- | ----------- | 
 | Reset Button GPIO | 11(479) |  
@@ -26,13 +39,14 @@
 | 100nF 커패시터 (104) | 1ea |
 | 60mm LED 아케이드 버튼 스위치 (SZH-LC043) | 1ea |
 
-### 실행
+## 실행방법
 1. Bixolon 버전 :
 	`sudo python3 print_Bixolon.py` 
 2. sam4s 버전: 
 	`sudo python3 print_sam4s.py`
 
-## 설치안내 [ Bixolon SRP-330II ]
+## 설치방법
+### Raspberry pi(cups) + Bixolon SRP-330II 
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
 2. 라즈베리파이 ssh, spi enable 
 3. 원격 다운로드  
@@ -64,7 +78,7 @@
 	2. Exit 0 전에 아래 코드 추가  
         `python3 /home/pi/moya-worklog/print.py &`
 
-## 설치방법 [ Sam4s Giant 100]
+### Raspberry pi(escpos) + Sam4s Giant 100
 1. 라즈베리파이 이미지 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
 3. Git 설치 후 원격 다운로드  
@@ -90,7 +104,7 @@
     `enable_uart = 1`
 
 
-## 설치방법 [ Odroid C4 + Sam4s Giant 100]
+### Odroid C4 + Sam4s Giant 100
 1. Ubuntu 이미지 준비
 2. uart 통신을 통해서 ip address확인 후 ssh 접속
 3. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
@@ -100,7 +114,7 @@ boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
 - setenv bootargs ${bootargs} gpiopower=${gpiopower}
 
 
-## 사용법
+## 동작하는 법
 1. 라즈베리파이 전원 연결하기. 
 2. 흰색 불이 들어오면 버튼을 누른다. 
 
@@ -126,8 +140,5 @@ sanghoemail@gmail.com
 
 ## 알려진 버그
 - 불안정한 전원장치에 연결할 때 출력이 불규칙적으로 발생하는 문제
-
-## 문제 발생 해결첵 
-- 버튼을 연결한 GPIO 의 저항값을 높힌다. 
 
 ## 업데이트 정보 
