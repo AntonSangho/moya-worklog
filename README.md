@@ -115,7 +115,10 @@ boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
 
 - setenv gpiopower "479"
 - setenv bootargs ${bootargs} gpiopower=${gpiopower}
-
+4. 부팅파일 설정
+	1. `sudo vi /etc/rc.local`
+	2. Exit 0 전에 아래 코드 추가  
+        `sudo python3 /root/moya-worklog/print_sam4s.py &`
 
 ## 동작하는 법
 1. 라즈베리파이 전원 연결하기. 
