@@ -26,7 +26,7 @@
 | LED Positive | 1(3.3V) |
 | LED Negative | 6(GND) |
 | Print Button GPIO | 25 |
-| Print Button LED | 8 |
+| Print Button LED | 12 |
 
 [BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
 
