@@ -39,7 +39,8 @@ file5 = "/root/moya-worklog/image/w5_2022.png"
 filelist = [file1, file2, file3, file4, file5]
 
 IRQ_GPIO_PIN = 25
-LED_GPIO_PIN = 8
+#LED_GPIO_PIN = 8
+LED_GPIO_PIN = 12
 #IRQ_EDGE = GPIO.FALLING
 IRQ_EDGE = GPIO.RISING
 count = 0
@@ -70,19 +71,18 @@ if __name__ == '__main__':
     #GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
-    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
+    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
     ## 테스트해별 경우 아래 주석 제거
-    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test)
+    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test)
     
 
-    print('Press Ctrl-C to exit')
-    try:
-        while True:
-            GPIO.output(LED_GPIO_PIN, GPIO.HIGH)
-            time.sleep(1)
-            #print_status()
-    except KeyboardInterrupt:
-        GPIO.output(LED_GPIO_PIN, GPIO.LOW)
-        GPIO.cleanup()
-        sys.exit(0)
+print('Press Ctrl-C to exit')
+try:
+    while True:
+        GPIO.output(LED_GPIO_PIN, GPIO.HIGH)
+        time.sleep(1)
+except KeyboardInterrupt:
+    GPIO.output(LED_GPIO_PIN, GPIO.LOW)
+    GPIO.cleanup()
+    sys.exit(0)
 
