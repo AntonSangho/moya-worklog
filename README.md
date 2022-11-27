@@ -108,7 +108,7 @@
 
 
 ### Odroid C4 + Sam4s Giant 100
-1. Ubuntu 이미지 준비
+1. [Ubuntu Minimal 20.04 image](https://wiki.odroid.com/odroid-c4/getting_started/os_installation_guide?redirect=1#downloads) 준비
 2. uart 통신을 통해서 ip address확인 후 ssh 접속
 3. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
 boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
