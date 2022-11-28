@@ -71,9 +71,12 @@ if __name__ == '__main__':
     #GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
-    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
+    # 기존의 pin이 high였던것을 제거하기위함
+    time.sleep(1)
+    GPIO.remove_event_detect(IRQ_GPIO_PIN)
+    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
     ## 테스트해별 경우 아래 주석 제거
-    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test)
+    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test, bouncetime=2000)
     
 
 print('Press Ctrl-C to exit')
