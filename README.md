@@ -108,17 +108,33 @@
 
 
 ### Odroid C4 + Sam4s Giant 100
-1. [Ubuntu Minimal 20.04 image](https://wiki.odroid.com/odroid-c4/getting_started/os_installation_guide?redirect=1#downloads) 준비
-2. uart 통신을 통해서 ip address확인 후 ssh 접속
+1. [Ubuntu Minimal 20.04 image](https://dn.odroid.com/S905X3/ODROID-C4/Ubuntu/ubuntu-20.04-4.9-mate-odroid-c4-hc4-20220228.img.xz)을 다운로드한다. 
+2. uart 통신을 통해서 ip address확인 후 ssh 접속. (id: root, password: odroid)
+3. 기본 비밀번호 변경  
+	`sudo passwd`
+4. 시스템 업데이이트. 
+	`sudo apt-get update`. 
+	`sudo apt-get upgrade`
+5. 원격 다운로드. 
+	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
 3. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
-boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가
+boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가. 
+```
+### in case of GPIOX.3 (Pin 11) of 2x20 pins connector
+setenv gpiopower "479"
+setenv bootargs ${bootargs} gpiopower=${gpiopower}
+```
+4. [Odroid 용 RPi.GPIO 설치](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#rpigpio_for_odroid)
 
-- setenv gpiopower "479"
-- setenv bootargs ${bootargs} gpiopower=${gpiopower}
-4. 부팅파일 설정
+`sudo apt-get install git python3-dev`. 
+`git clone https://github.com/awesometic/RPi.GPIO-Odroid`. 
+`cd RPi.GPIO-Odroid`. 
+`sudo python setup.py build install`. 
+
+5. 부팅파일 설정
 	1. `sudo vi /etc/rc.local`
 	2. Exit 0 전에 아래 코드 추가  
-        `sudo python3 /root/moya-worklog/print_sam4s.py &`
+        `sudo python3 /root/moya-worklog/odroid/print_odroid.py &`
 
 ## 동작하는 법
 1. 라즈베리파이 전원 연결하기. 
