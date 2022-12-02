@@ -1,3 +1,6 @@
 [submodule "pi-power-button"]
 	path = pi-power-button
 	url = https://github.com/Howchoo/pi-power-button.git
+[submodule "RPi.GPIO-Odroid"]
+	path = RPi.GPIO-Odroid
+	url = https://github.com/awesometic/RPi.GPIO-Odroid
