@@ -9,13 +9,13 @@ Bixolon
 import RPi.GPIO as GPIO
 import time
 import os
-#import cups
+import cups
 import random
 from escpos import *
 from PIL import Image
 
-#conn = cups.Connection()
-#printers = conn.getPrinters()
+conn = cups.Connection()
+printers = conn.getPrinters()
 #p = printer.Usb(0x1c8a, 0x3a0e, in_ep=0x81, out_ep=0x02)
 
 # Sam4s Giant 100
@@ -72,11 +72,11 @@ if __name__ == '__main__':
     GPIO.setup(IRQ_GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(LED_GPIO_PIN, GPIO.OUT)
     # 기존의 pin이 high였던것을 제거하기위함
-    time.sleep(2)
-    GPIO.remove_event_detect(IRQ_GPIO_PIN)
-    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
+    #time.sleep(2)
+    #GPIO.remove_event_detect(IRQ_GPIO_PIN)
+    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
     ## 테스트해별 경우 아래 주석 제거
-    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test, bouncetime=2000)
+    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test, bouncetime=2000)
     
 
 print('Press Ctrl-C to exit')
