@@ -111,34 +111,41 @@
 
 
 ### Odroid C4 + Sam4s Giant 100
-1. [Ubuntu Minimal 20.04 image](https://dn.odroid.com/S905X3/ODROID-C4/Ubuntu/ubuntu-20.04-4.9-mate-odroid-c4-hc4-20220228.img.xz)을 다운로드한다. 
-2. uart 통신을 통해서 ip address확인 후 ssh 접속. (id: root, password: odroid)
-3. 기본 비밀번호 변경  
+1. [Ubuntu Minimal 20.04 image](https://dn.odroid.com/S905X3/ODROID-C4/Ubuntu/ubuntu-20.04-4.9-mate-odroid-c4-hc4-20220228.img.xz)을 다운로드한다.
+2. [uart 통신을 통해서 ip address확인 후 ssh 접속.](https://wiki.odroid.com/accessory/development/usb_uart_kit#usb-uart_kit)
+   	- id: `root`
+   	- password: `odroid`
+4. [nmcli를 이용하여 무선 접속하기](https://wiki.odroid.com/troubleshooting/minimal_image_wifi_setup_nmcli#check_if_your_wifi_module_enabled)
+   	1. `nmcli device`
+   	2. `nmcli radio wifi on`
+   	3. `nmcli device wifi list`
+   	4. `nmcli device wifi connect "showme_2.4G" password "PASSWORD_FOR_THE_WIFI"`
+5. 기본 비밀번호 변경  
 	`sudo passwd`
-4. 시스템 업데이이트  
+6. 시스템 업데이이트  
 	`sudo apt-get update`  
 	`sudo apt-get upgrade`
-5. 개발환경세팅  
+7. 개발환경세팅  
 	`sudo apt-get install python3-dev`  
 	`sudo apt-get install python3-pip`  
 	`sudo apt-get install cups`  
 	`sudo apt-get install escpos`  
 	`sudo apt-get install libcups2-dev`
 	
-6. [Odroid 용 RPi.GPIO 설치](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#rpigpio_for_odroid)    
+8. [Odroid 용 RPi.GPIO 설치](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#rpigpio_for_odroid)    
 	`git clone https://github.com/awesometic/RPi.GPIO-Odroid`  
 	`cd RPi.GPIO-Odroid`  
 	`sudo python setup.py build install`  
 	
-7. 원격 다운로드  
+9. 원격 다운로드  
 	`git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git`
 	
-8. pip install  
+10. pip install  
 	`cd odroid`  
 	`pip install -r requirements.txt`
 	
 
-9. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
+11. [리셋버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
 boot.ini(/media/boot/boot.ini)에 setenv bootargs 아래 두줄 추가. 
 ```
 ### in case of GPIOX.3 (Pin 11) of 2x20 pins connector
