@@ -85,6 +85,14 @@
         `python3 /home/pi/moya-worklog/print.py &`
 
 ### Raspberry pi(escpos) + Sam4s Giant 100
+
+#### 설치파일 실행하는 법  
+`chmod +x install.sh`  
+
+`./install.sh`  
+
+#### 설치하는 법  
+
 1. 라즈베리파이 이미지 준비 : Raspbian 32-bit Lite ver (2022-04-04)
 2. 라즈베리파이 ssh enable 
 3. Git 설치 후 원격 다운로드  
