@@ -30,7 +30,7 @@ sudo sed -i '/# Load kernel, dtb and initrd/i ### in case of GPIOX.3 (Pin 11) of
 # Build and install RPi.GPIO-Odroid
 cd RPi.GPIO-Odroid
 python setup.py build
-sudo python setup.py install
+sudo python3 setup.py install
 cd ..
 
 # Clone moya-worklog repository
