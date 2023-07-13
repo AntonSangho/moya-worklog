@@ -23,19 +23,12 @@ p = printer.Usb(0x1c8a, 0x3a0e, in_ep=0x81, out_ep=0x02)
 
 #Bixolon Printer
 #p = printer.Usb(0x1504, 0x006e, in_ep=0x81, out_ep=0x02)
-"""
-file1 = "/home/pi/moya-worklog/image/w1_2022.png"
-file2 = "/home/pi/moya-worklog/image/w2_2022.png"
-file3 = "/home/pi/moya-worklog/image/w3_2022.png"
-file4 = "/home/pi/moya-worklog/image/w4_2022.png"
-file5 = "/home/pi/moya-worklog/image/w5_2022.png"
-filelist = [file1, file2, file3, file4, file5]
-"""
-file1 = "/root/moya-worklog/image/w1_2022.png"
-file2 = "/root/moya-worklog/image/w2_2022.png"
-file3 = "/root/moya-worklog/image/w3_2022.png"
-file4 = "/root/moya-worklog/image/w4_2022.png"
-file5 = "/root/moya-worklog/image/w5_2022.png"
+
+file1 = "/home/odroid/moya-worklog/image/w1_2022.png"
+file2 = "/home/odroid/moya-worklog/image/w2_2022.png"
+file3 = "/home/odroid/moya-worklog/image/w3_2022.png"
+file4 = "/home/odroid/moya-worklog/image/w4_2022.png"
+file5 = "/home/odroid/moya-worklog/image/w5_2022.png"
 filelist = [file1, file2, file3, file4, file5]
 
 IRQ_GPIO_PIN = 25
@@ -74,9 +67,9 @@ if __name__ == '__main__':
     # 기존의 pin이 high였던것을 제거하기위함
     #time.sleep(2)
     #GPIO.remove_event_detect(IRQ_GPIO_PIN)
-    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
+    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=Print_sam4s, bouncetime=2000)
     ## 테스트해별 경우 아래 주석 제거
-    GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test, bouncetime=2000)
+    #GPIO.add_event_detect(IRQ_GPIO_PIN, IRQ_EDGE, callback=print_test, bouncetime=2000)
     
 
 print('Press Ctrl-C to exit')

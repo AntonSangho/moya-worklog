@@ -25,19 +25,20 @@ sudo apt-get install -y libcups2-dev
 sudo sed -i '/# Load kernel, dtb and initrd/i ### in case of GPIOX.3 (Pin 11) of 2x20 pins connector\nsetenv gpiopower "479"\nsetenv bootargs ${bootargs} gpiopower=${gpiopower}' /media/boot/boot.ini
 
 # Clone RPi.GPIO-Odroid repository
-git clone https://github.com/awesometic/RPi.GPIO-Odroid
+# git clone https://github.com/awesometic/RPi.GPIO-Odroid
 
 # Build and install RPi.GPIO-Odroid
 cd RPi.GPIO-Odroid
 python setup.py build
 sudo python setup.py install
+cd ..
 
 # Clone moya-worklog repository
-git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git
+# git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git
 
 # Install requirements for moya-worklog
-cd moya-worklog/odroid
-pip install -r requirements.txt
+# cd moya-worklog/odroid
+sudo pip3 install -r requirements.txt
 
 # Add command to /etc/rc.local
-sudo sed -i '/^exit 0/i sudo python3 /root/moya-worklog/odroid/print_odroid.py &' /etc/rc.local
+sudo sed -i '/^exit 0/i sudo python3 /home/odroid/moya-worklog/odroid/print_odroid.py &' /etc/rc.local
