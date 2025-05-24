@@ -127,4 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Claude code documentation
 CLAUDE.md
+
+# Vim swap files
+*.swp
+*.swo
+*~
+
