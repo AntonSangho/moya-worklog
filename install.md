@@ -72,6 +72,18 @@ git submodule update --init --recursive
 
 ### Step 3: Python 의존성 설치
 
+> **주의:** `requirements.txt`의 고정 버전이 Python 3.13과 호환되지 않을 수 있습니다.
+> Debian 13 (trixie) 이상에서는 아래 방법으로 설치하세요.
+
+```bash
+# 핵심 패키지 설치 (버전 고정 없이)
+sudo pip3 install --break-system-packages pillow python-escpos pyusb qrcode pyserial
+
+# Debian 13 (trixie)에서 GPIO 호환성을 위해 rpi-lgpio 설치
+sudo pip3 install --break-system-packages rpi-lgpio
+```
+
+기존 방식 (Python 3.11 이하):
 ```bash
 cd ~/moya-worklog
 pip3 install -r requirements.txt
@@ -218,6 +230,50 @@ journalctl -u moya-worklog -n 50
 
 # 수동 실행으로 에러 확인
 sudo python3 /home/pi/moya-worklog/print_Bixolon.py
+```
+
+---
+
+### Debian 13 (trixie) / Python 3.13 관련 이슈
+
+**1. Pillow 빌드 실패 (KeyError: '__version__')**
+
+증상:
+```
+KeyError: '__version__'
+Getting requirements to build wheel: finished with status 'error'
+```
+
+원인: `requirements.txt`의 `Pillow==9.1.1`이 Python 3.13과 호환되지 않음
+
+해결:
+```bash
+sudo pip3 install --break-system-packages pillow
+```
+
+**2. ModuleNotFoundError: No module named 'escpos'**
+
+증상: systemd 서비스 시작 시 모듈을 찾지 못함
+
+원인: `pip3 install`이 사용자 경로(`~/.local`)에만 설치되어 root로 실행되는 systemd에서 접근 불가
+
+해결:
+```bash
+sudo pip3 install --break-system-packages pillow python-escpos pyusb qrcode pyserial
+```
+
+**3. RuntimeError: Failed to add edge detection**
+
+증상:
+```
+RuntimeError: Failed to add edge detection
+```
+
+원인: Debian 13에서 기존 RPi.GPIO의 edge detection이 작동하지 않음
+
+해결:
+```bash
+sudo pip3 install --break-system-packages rpi-lgpio
 ```
 
 ### 유용한 명령어
