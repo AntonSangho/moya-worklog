@@ -28,13 +28,21 @@ file4 = "/home/pi/moya-worklog/image/w4_2022.png"
 file5 = "/home/pi/moya-worklog/image/w5_2022.png"
 filelist = [file1, file2, file3, file4, file5]
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# GPIO 핀 설정
+BUTTON_PINS = [2, 21]  # 두 GPIO 핀 모두 버튼으로 허용
+LED_PIN = 20
 
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-GPIO.setup(20, GPIO.OUT)
+
+# 버튼 핀 설정 (GPIO 2, 21 모두 지원)
+for pin in BUTTON_PINS:
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+# LED 핀 설정
+GPIO.setup(LED_PIN, GPIO.OUT)
 print("LED on")
-GPIO.output(20, GPIO.HIGH)
+GPIO.output(LED_PIN, GPIO.HIGH)
 time.sleep(1)
 count = 0
 
@@ -52,11 +60,15 @@ def print_test(channel):
     p.text(str(count) + "\n")
     p.cut()
 
-GPIO.add_event_detect(21, GPIO.RISING, callback=print_sam4s, bouncetime=2000)
+# 두 버튼 핀 모두 이벤트 감지
+for pin in BUTTON_PINS:
+    GPIO.add_event_detect(pin, GPIO.RISING, callback=print_sam4s, bouncetime=2000)
+
+print(f"버튼 GPIO {BUTTON_PINS} 대기 중...")
 
 try:
     while True:
         pass
 except KeyboardInterrupt:
-        GPIO.output(20, GPIO.LOW)
+        GPIO.output(LED_PIN, GPIO.LOW)
         GPIO.cleanup()

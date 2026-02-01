@@ -198,12 +198,15 @@ ps aux | grep print_Bixolon
 
 ### GPIO 핀 연결
 
-| 기능 | GPIO (BCM) | 물리 핀 |
-|------|------------|---------|
-| Print Button | 21 | 40 |
-| Print Button LED | 20 | 38 |
-| Reset Button | 3 | 5 |
-| Power LED | 6 | 31 |
+**버튼은 GPIO 2 또는 21 중 하나를 사용할 수 있습니다.**
+
+| 기능 | GPIO (BCM) | 물리 핀 | 비고 |
+|------|------------|---------|------|
+| Print Button (옵션 1) | 2 | 3 | |
+| Print Button (옵션 2) | 21 | 40 | |
+| Print Button LED | 20 | 38 | |
+| Reset Button | 3 | 5 | |
+| Power LED | 6 | 31 | |
 
 ### 트러블슈팅
 
