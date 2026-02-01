@@ -52,7 +52,31 @@
 	`sudo python3 print_sam4s.py`
 
 ## 설치방법
-### Raspberry pi(cups) + Bixolon SRP-330II 
+
+### AI 에이전트를 이용한 자동 설치 (권장)
+
+Claude Code와 같은 AI 에이전트가 자동으로 설치를 수행할 수 있습니다.
+
+**사전 준비 (사람이 수행):**
+1. Raspberry Pi Imager로 **Raspbian 64-bit Lite** 이미지 굽기
+2. 첫 부팅 시 WiFi, SSH 설정
+3. Bixolon SRP-330II 프린터 USB 연결
+4. 정격 5V 2A 이상 파워 아답터 사용 (Adaptive Power 금지)
+
+**AI 에이전트 실행:**
+1. SSH로 라즈베리파이 접속
+2. 저장소 클론:
+   ```bash
+   git clone https://github.com/AntonSangho/moya-worklog.git
+   ```
+3. AI 에이전트(Claude Code 등)가 SSH로 접속
+4. AI 에이전트에게 `install.md` 파일을 따라 설치 요청
+
+자세한 내용은 [install.md](./install.md) 참고
+
+---
+
+### Raspberry pi(cups) + Bixolon SRP-330II (수동 설치) 
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
 2. 라즈베리파이 ssh, spi enable 
 3. 원격 다운로드  
