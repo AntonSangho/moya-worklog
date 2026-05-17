@@ -12,19 +12,21 @@ import logging
 from escpos.printer import Usb
 from PIL import Image
 
-# 로깅 설정
+# 로깅 설정 (force=True: escpos 임포트로 설정된 핸들러 덮어쓰기)
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/home/anton/moya-worklog/printer.log'),
+        logging.FileHandler('/home/pi/moya-worklog/printer.log'),
         logging.StreamHandler()
-    ]
+    ],
+    force=True
 )
 logger = logging.getLogger(__name__)
 
 # GPIO 핀 설정
-BUTTON_PIN = 2  # 출력 버튼
+# GPIO2(SDA)는 하드웨어 풀업 내장으로 사용 불가 → GPIO4(Physical 7번)로 변경
+BUTTON_PIN = 4  # 출력 버튼
 LED_PIN = 20     # 상태 LED
 
 # 프린터 설정
@@ -34,7 +36,7 @@ IN_EP = 0x81
 OUT_EP = 0x02
 
 # 이미지 설정
-IMAGE_DIR = "/home/anton/moya-worklog/image"
+IMAGE_DIR = "/home/pi/moya-worklog/image"
 IMAGE_FILES = [
     f"{IMAGE_DIR}/w1_2022.png",
     f"{IMAGE_DIR}/w2_2022.png",
