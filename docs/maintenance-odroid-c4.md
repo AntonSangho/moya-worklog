@@ -150,15 +150,19 @@ journalctl -u moya-printer-odroid.service -f
         │ NO  → 네트워크 설정 확인 (SW)
         │ YES
         ↓
-[4] 서비스 실행 중?
+[4] SD카드 상태 정상?
+        │ NO  → SD카드 점검/교체 (HW)
+        │ YES
+        ↓
+[5] 서비스 실행 중?
         │ NO  → 서비스 재시작 (SW)
         │ YES
         ↓
-[5] 프린터 USB 인식?
+[6] 프린터 USB 인식?
         │ NO  → USB 케이블/프린터 점검 (HW)
         │ YES
         ↓
-[6] 버튼 동작?
+[7] 버튼 동작?
         │ NO  → GPIO 배선/설정 점검 (HW/SW)
         │ YES
         ↓
@@ -217,7 +221,55 @@ ssh root@<IP주소>
 
 ---
 
-### 4단계 — 서비스 확인 (SW)
+### 4단계 — SD카드 상태 확인 (HW)
+
+#### I/O 에러 확인
+
+```bash
+dmesg | grep -iE "error|mmc|bad|i/o"
+```
+
+| 메시지 | 판단 |
+|--------|------|
+| `I/O error`, `mmc0: error` | SD카드 손상 진행 중 → 교체 고려 |
+| `Volume was not properly unmounted` | 비정상 종료 흔적 → fsck 실행 필요 |
+| `resp_timeout`, `Command retried failed` | MMC 컨트롤러 타임아웃 (재시도 후 부팅 성공이면 경미) |
+
+#### 파일시스템 에러 카운트
+
+```bash
+tune2fs -l /dev/mmcblk1p2 | grep -iE "error|mount count|last checked"
+```
+
+`Filesystem errors` 항목이 0이면 정상.
+
+#### 디스크 사용량 및 마운트 상태
+
+```bash
+df -h
+mount | grep mmcblk1p2
+```
+
+| 확인 항목 | 정상 기준 |
+|-----------|-----------|
+| 루트(`/`) 사용량 | 90% 미만 |
+| 마운트 옵션 | `rw` (읽기-쓰기) 포함 |
+
+> `ro` (읽기전용)로 마운트되어 있으면 파일시스템 오류로 자동 전환된 것 → OS 재설치 필요
+
+#### 부트 파티션 비정상 언마운트 수정
+
+`dmesg`에서 `Volume was not properly unmounted` 메시지 확인 시:
+
+```bash
+umount /media/boot
+fsck -a /dev/mmcblk1p1
+mount /media/boot
+```
+
+---
+
+### 5단계 — 서비스 확인 (SW)
 
 ```bash
 systemctl status moya-printer-odroid.service
@@ -243,7 +295,7 @@ systemctl restart moya-printer-odroid.service
 
 ---
 
-### 5단계 — 프린터 USB 확인 (HW/SW)
+### 6단계 — 프린터 USB 확인 (HW/SW)
 
 ```bash
 lsusb | grep -i 1c8a
@@ -265,7 +317,7 @@ systemctl restart moya-printer-odroid.service
 
 ---
 
-### 6단계 — 버튼 동작 확인 (HW/SW)
+### 7단계 — 버튼 동작 확인 (HW/SW)
 
 **프린트 버튼 GPIO 직접 테스트:**
 
