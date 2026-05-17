@@ -133,6 +133,171 @@ journalctl -u moya-printer-odroid.service -f
 
 ---
 
+## 문제 확인 프로세스
+
+하드웨어 문제와 소프트웨어 문제를 단계적으로 분리한다.
+
+```
+[1] 전원 연결 → LED 점등?
+        │ NO  → 전원 케이블/어댑터 점검 (HW)
+        │ YES
+        ↓
+[2] UART 부팅 로그 정상?
+        │ NO  → 보드/SD카드 점검 (HW)
+        │ YES
+        ↓
+[3] SSH 접속 가능?
+        │ NO  → 네트워크 설정 확인 (SW)
+        │ YES
+        ↓
+[4] 서비스 실행 중?
+        │ NO  → 서비스 재시작 (SW)
+        │ YES
+        ↓
+[5] 프린터 USB 인식?
+        │ NO  → USB 케이블/프린터 점검 (HW)
+        │ YES
+        ↓
+[6] 버튼 동작?
+        │ NO  → GPIO 배선/설정 점검 (HW/SW)
+        │ YES
+        ↓
+    정상 동작
+```
+
+---
+
+### 1단계 — 전원 확인 (HW)
+
+> **주의**: Micro USB 포트는 허브 포트입니다. 전원이 아닙니다.  
+> 반드시 **DC 잭**으로 전원을 연결하세요.
+
+- DC 잭에 전원 어댑터 연결
+- 전면 LED 점등 확인
+- LED 미점등 시: 어댑터 출력 전압 확인 (5V), 케이블 단선 확인
+
+---
+
+### 2단계 — 부팅 확인 (HW/SW)
+
+USB-UART 키트를 연결하고 전원을 켜서 부팅 로그를 확인한다.
+
+```bash
+screen /dev/ttyUSB0 115200
+```
+
+| 증상 | 원인 | 조치 |
+|------|------|------|
+| 아무 출력 없음 | UART 연결 오류 | TX/RX 선 확인, baud rate 확인 |
+| 부팅 로그 후 멈춤 | SD카드 불량 또는 OS 손상 | OS 재설치 |
+| `kernel panic` | 커널 문제 | OS 재설치 |
+| 정상 부팅 후 로그인 프롬프트 | 정상 | 3단계로 |
+
+---
+
+### 3단계 — 네트워크 및 SSH 확인 (SW)
+
+UART 콘솔에서 IP 확인:
+
+```bash
+ip addr show eth0
+```
+
+SSH 접속 확인:
+
+```bash
+ssh root@<IP주소>
+```
+
+| 증상 | 원인 | 조치 |
+|------|------|------|
+| IP 없음 | 이더넷 미연결 | LAN 케이블 연결 확인 |
+| SSH 거부 | SSH 서비스 중지 | `systemctl start ssh` |
+| 비밀번호 오류 | 비밀번호 변경됨 | UART 콘솔에서 `passwd` 재설정 |
+
+---
+
+### 4단계 — 서비스 확인 (SW)
+
+```bash
+systemctl status moya-printer-odroid.service
+```
+
+| 상태 | 조치 |
+|------|------|
+| `active (running)` | 정상, 5단계로 |
+| `failed` | 로그 확인 후 재시작 |
+| `inactive` | `systemctl start moya-printer-odroid.service` |
+
+로그 확인:
+
+```bash
+journalctl -u moya-printer-odroid.service -n 50
+```
+
+서비스 재시작:
+
+```bash
+systemctl restart moya-printer-odroid.service
+```
+
+---
+
+### 5단계 — 프린터 USB 확인 (HW/SW)
+
+```bash
+lsusb | grep -i 1c8a
+```
+
+- 출력 있음 (`1c8a:3a0e`) → 정상, 6단계로
+- 출력 없음 → 아래 순서로 점검:
+
+1. 프린터 전원 ON 확인
+2. USB 케이블 재연결
+3. 다른 USB 포트로 교체
+4. `dmesg | tail -20` 으로 USB 인식 오류 확인
+
+서비스 재시작으로 프린터 재연결:
+
+```bash
+systemctl restart moya-printer-odroid.service
+```
+
+---
+
+### 6단계 — 버튼 동작 확인 (HW/SW)
+
+**프린트 버튼 GPIO 직접 테스트:**
+
+```bash
+source /root/moya-worklog/venv-odroid/bin/activate
+python3 -c "
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+print('버튼 상태:', GPIO.input(25))
+GPIO.cleanup()
+"
+```
+
+버튼을 누른 채로 실행하면 `1`, 떼면 `0`이 출력되어야 한다.
+
+| 결과 | 원인 | 조치 |
+|------|------|------|
+| 항상 `0` | 정상 (미입력) | 버튼 누르면서 재테스트 |
+| 항상 `1` | 배선 쇼트 또는 하드웨어 풀업 | 배선 재확인 |
+| 버튼 눌러도 변화 없음 | GPIO 핀 불량 또는 배선 오류 | 핀맵 재확인 |
+
+**리셋 버튼 미동작 시:**
+
+```bash
+grep gpiopower /media/boot/boot.ini
+```
+
+출력 없으면 [8단계 리셋 버튼 설정](#8-리셋-버튼-설정) 재적용 후 재부팅.
+
+---
+
 ## 실행 (수동)
 
 ```bash
