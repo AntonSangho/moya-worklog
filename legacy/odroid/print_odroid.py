@@ -22,7 +22,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         RotatingFileHandler(
-            "/home/odroid/moya-worklog/printer.log",
+            "/root/moya-worklog/printer.log",
             maxBytes=1 * 1024 * 1024,
             backupCount=3,
         ),
@@ -41,7 +41,7 @@ PRODUCT_ID: int = 0x3A0E
 IN_EP: int = 0x81
 OUT_EP: int = 0x02
 
-IMAGE_DIR: str = "/home/odroid/moya-worklog/image"
+IMAGE_DIR: str = "/root/moya-worklog/image"
 IMAGE_FILES: list[str] = [
     f"{IMAGE_DIR}/w{i}_2022.png" for i in range(1, 6)
 ]
