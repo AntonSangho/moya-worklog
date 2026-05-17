@@ -72,16 +72,42 @@
    setenv bootargs ${bootargs} gpiopower=${gpiopower}
    ```
 
-9. 부팅 자동 실행
+9. Python 가상환경 및 패키지 설치
+
    ```bash
-   sudo vi /etc/rc.local
-   # exit 0 전에 추가:
-   sudo python3 /root/moya-worklog/legacy/odroid/print_odroid.py &
+   python3 -m venv /root/moya-worklog/venv-odroid
+   source /root/moya-worklog/venv-odroid/bin/activate
+   pip install --upgrade pip
+   pip install -r legacy/odroid/requirements.txt
    ```
+
+   RPi.GPIO-Odroid 설치 (표준 RPi.GPIO 대체):
+   ```bash
+   pip uninstall -y RPi.GPIO
+   git clone https://github.com/awesometic/RPi.GPIO-Odroid /tmp/RPi.GPIO-Odroid
+   cd /tmp/RPi.GPIO-Odroid
+   CFLAGS=-fcommon python setup.py build install
+   ```
+
+10. systemd 서비스 등록 (부팅 자동 실행)
+
+    ```bash
+    cp legacy/odroid/moya-printer-odroid.service /etc/systemd/system/
+    systemctl daemon-reload
+    systemctl enable moya-printer-odroid.service
+    systemctl start moya-printer-odroid.service
+    ```
+
+    상태 확인:
+    ```bash
+    systemctl status moya-printer-odroid.service
+    journalctl -u moya-printer-odroid.service -f
+    ```
 
 ## 실행
 
 ```bash
+source /root/moya-worklog/venv-odroid/bin/activate
 python3 legacy/odroid/print_odroid.py
 ```
 
@@ -91,5 +117,6 @@ python3 legacy/odroid/print_odroid.py
 |------|------|
 | `legacy/odroid/print_odroid.py` | Odroid C4용 메인 스크립트 |
 | `legacy/odroid/requirements.txt` | 패키지 목록 |
+| `legacy/odroid/moya-printer-odroid.service` | systemd 서비스 파일 |
 | `hardware/schematic/moya-worklog_OdroidC4_v1_bb.png` | 배선도 |
 | `hardware/schematic/moya-worklog_sch.png` | 회로도 |
