@@ -1,6 +1,6 @@
 [Unit]
 Description=Moya Worklog Printer Service (Odroid C4)
-After=network.target
+After=network.target systemd-udev-settle.service
 
 [Service]
 Type=simple
