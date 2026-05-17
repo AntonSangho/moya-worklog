@@ -192,7 +192,8 @@ def setup_gpio() -> bool:
 
 def button_watcher() -> None:
     """버튼 감시 데몬 스레드 — 50ms 간격 폴링, Rising Edge 감지"""
-    last_state = GPIO.LOW
+    time.sleep(0.5)  # GPIO 핀 안정화 대기
+    last_state = GPIO.input(BUTTON_PIN)
     while not _stop_event.is_set():
         try:
             state = GPIO.input(BUTTON_PIN)
