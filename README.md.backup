@@ -3,11 +3,10 @@
 라즈베리파이와 같은 리눅스 소형 컴퓨터로 특정 파일을 영수증 프린트를 통해 출력하는 장치.  
 
 ## Wiring 
-# Raspberry Pi
-<img src="/hardware/schematic/Wiring_v1.jpg" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
-
+# Raspberry Pi4
+<img src="/Schematic/Wiring_v1.jpg" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>. 
 # Odroid C4
-<img src="/hardware/schematic/moya-worklog_OdroidC4_v1_bb.png" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
+<img src="/Schematic/moya-worklog_OdroidC4_v1_bb.png" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
 
 ## Pin Map 
 ### Raspberry Pi
@@ -17,7 +16,7 @@
 | Reset Button Active | GND |
 | Power LED Positive | 6 |
 | Power LED Negative | GND |
-| Print Button GPIO | 4 |
+| Print Button GPIO | 21 |
 | Print Button LED | 20 |
 
 [GPIO](https://pinout.xyz/)
@@ -49,123 +48,11 @@
 ## 실행방법
 1. Bixolon 버전 :
 	`sudo python3 print_Bixolon.py` 
-2. sam4s 버전 (32-bit): 
+2. sam4s 버전: 
 	`sudo python3 print_sam4s.py`
-3. **sam4s 버전 (64-bit 최신)**: 
-	`python3 print_sam4s_production.py`
 
 ## 설치방법
-
-### 🆕 Raspberry Pi 3/4 (64-bit) + Sam4s Giant 100 (권장)
-
-**지원 환경**: Raspberry Pi OS 64-bit Lite (Bookworm)  
-**특징**: 스레드 방식, 이미지 캐싱, USB 자동 재연결, systemd 서비스
-
-1. **라즈베리파이 이미지 굽기 (Raspberry Pi Imager)**
-
-   [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 다운로드 후 실행
-
-   - OS 선택: `Raspberry Pi OS (other)` → `Raspberry Pi OS Lite (64-bit)`
-   - Storage 선택: SD카드 선택
-
-   **OS Customisation 에서 반드시 설정 (NEXT 클릭 후 Edit Settings):**
-
-   | 항목 | 설정값 |
-   |------|--------|
-   | hostname | `raspberrypi` |
-   | username | `pi` |
-   | password | 원하는 비밀번호 |
-   | SSH | Enable (Use password authentication) |
-
-   > ⚠️ username을 `pi` 이외의 값으로 설정하면 서비스 파일 경로(`/home/pi/...`)와  
-   > 맞지 않아 실행 오류가 발생합니다. username은 반드시 `pi`로 설정하세요.
-
-2. **GPIO 활성화** (중요!)
-   ```bash
-   sudo raspi-config nonint do_spi 0
-   sudo raspi-config nonint do_i2c 0
-   echo "dtparam=gpio=on" | sudo tee -a /boot/firmware/config.txt
-   sudo reboot
-   ```
-
-3. **프로젝트 다운로드**
-   ```bash
-   git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git
-   cd moya-worklog
-   git checkout -b raspbian-64bit-lite
-   ```
-
-4. **시스템 패키지 설치**
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install -y build-essential git vim curl wget
-   sudo apt install -y python3-dev python3-pip python3-venv python3-setuptools python3-wheel
-   sudo apt install -y libffi-dev libssl-dev libjpeg-dev zlib1g-dev libusb-1.0-0-dev
-   sudo apt install -y python3-rpi.gpio python3-gpiozero usbutils
-   ```
-
-5. **CUPS 프린터 시스템 설치**
-   ```bash
-   sudo apt install -y cups cups-client cups-bsd cups-common libcups2-dev
-   sudo apt install -y printer-driver-all printer-driver-cups-pdf
-   sudo systemctl enable cups
-   sudo systemctl start cups
-   ```
-
-6. **사용자 권한 설정**
-   ```bash
-   sudo usermod -a -G dialout,gpio,spi,i2c,lpadmin,lp anton
-   newgrp lpadmin
-   ```
-
-7. **Python 가상환경 설정**
-   ```bash
-   python3 -m venv venv-64bit
-   source venv-64bit/bin/activate
-   pip install --upgrade pip wheel
-   pip install -r requirements-64bit.txt
-   ```
-
-8. **프린터 설정 (Raw 모드)**
-   ```bash
-   # Sam4s Giant 100 USB 연결 후
-   sudo lpadmin -p Sam4s_Giant100 -E -v "usb://1c8a/3a0e" -m raw
-   sudo lpoptions -d Sam4s_Giant100
-   ```
-
-9. **USB 권한 설정**
-   ```bash
-   sudo tee /etc/udev/rules.d/99-sam4s-printer.rules << EOF
-   SUBSYSTEM=="usb", ATTR{idVendor}=="1c8a", ATTR{idProduct}=="3a0e", MODE="0666", GROUP="lp"
-   KERNEL=="lp[0-9]*", SUBSYSTEM=="usb", MODE="0666", GROUP="lp"
-   EOF
-   sudo udevadm control --reload-rules
-   sudo udevadm trigger
-   ```
-
-10. **테스트 실행**
-    ```bash
-    source venv-64bit/bin/activate
-    python3 print_sam4s_production.py
-    ```
-
-11. **부팅시 자동 시작 설정**
-    ```bash
-    sudo cp moya-printer.service /etc/systemd/system/moya-printer.service
-    sudo systemctl daemon-reload
-    sudo systemctl enable moya-printer.service
-    sudo systemctl start moya-printer.service
-    ```
-
-    상태 확인:
-    ```bash
-    sudo systemctl status moya-printer.service
-    journalctl -u moya-printer.service -f
-    ```
-
----
-
-### Raspberry pi(cups) + Bixolon SRP-330II
+### Raspberry pi(cups) + Bixolon SRP-330II 
 1. 라즈베리파이 imge 준비 : Raspbian 32-bit Desktop ver (2021-05-07)
 2. 라즈베리파이 ssh, spi enable 
 3. 원격 다운로드  
@@ -197,7 +84,7 @@
 	2. Exit 0 전에 아래 코드 추가  
         `python3 /home/pi/moya-worklog/print.py &`
 
-### Raspberry pi(escpos) + Sam4s Giant 100 (32-bit Legacy)
+### Raspberry pi(escpos) + Sam4s Giant 100
 
 #### 설치파일 실행하는 법  
 `chmod +x install.sh`  
@@ -291,41 +178,10 @@ setenv bootargs ${bootargs} gpiopower=${gpiopower}
 6. 해상도: 고(300ppi) / 앤티 앨리어싱: 아트최적화 / 배경색: 흰색 
 7. 확인 
 
-## 파일 정보 및 목록
-
-```
-moya-worklog/
-├── print_sam4s_production.py  # 64-bit 최신 (스레드, 이미지 캐싱, USB 자동 재연결)
-├── print_Bixolon.py           # Bixolon 프린터용
-├── moya-printer.service       # systemd 서비스 파일
-├── requirements-64bit.txt     # 64-bit 환경 패키지
-├── requirements.txt           # 32-bit 레거시 패키지
-├── image/                     # 출력 이미지 (PNG)
-├── hardware/
-│   ├── schematic/             # 회로도, 배선도
-│   └── drawing/               # 기구 도면
-├── Driver/                    # 프린터 드라이버
-├── legacy/                    # 구버전 코드 (Odroid, 32-bit)
-│   └── odroid/
-└── pi-power-button/           # 전원 버튼 스크립트
-```
-
-## 시스템 요구사항
-
-### 64-bit 버전 (권장)
-- **하드웨어**: Raspberry Pi 3B+ / 4B 이상
-- **OS**: Raspberry Pi OS 64-bit Lite (Bookworm)
-- **메모리**: 1GB 이상
-- **저장공간**: 8GB 이상
-- **Python**: 3.11 이상
-- **특징**: 스레드 방식, 이미지 캐싱, USB 자동 재연결, systemd 서비스
-
-### 32-bit 버전 (레거시)
-- **하드웨어**: Raspberry Pi 3A+ 이상
-- **OS**: Raspberry Pi OS 32-bit Lite
-- **메모리**: 512MB 이상
-- **Python**: 3.7 이상
-- **특징**: 인터럽트 방식, rc.local 실행
+## 파일 정보 및 목록 
+- 실행파일
+- 출력이미지
+- 프린터 드라이버 
 
 ## 저작권 및사용권 정보 
 reliquum 
@@ -334,14 +190,6 @@ reliquum
 sanghoemail@gmail.com 
 
 ## 알려진 버그
-- ~~불안정한 전원장치에 연결할 때 출력이 불규칙적으로 발생하는 문제~~ (64-bit 버전에서 해결)
-- 32-bit 버전에서 GPIO 인터럽트 간헐적 실패 (64-bit 폴링 방식으로 해결)
+- 불안정한 전원장치에 연결할 때 출력이 불규칙적으로 발생하는 문제
 
-## 업데이트 정보
-- **2026.05**: Odroid C4 → Raspberry Pi 3 이식 완료
-- **2026.05**: GPIO2(SDA) 하드웨어 풀업 문제 → GPIO4로 변경
-- **2026.05**: 스레드 방식 버튼 감지, 이미지 캐싱, USB 자동 재연결 추가
-- **2026.05**: systemd 서비스(`moya-printer.service`) 등록
-- **2025.08**: 64-bit Raspberry Pi OS 지원 추가
-- **2025.08**: systemd 서비스 지원 추가
-- **2025.08**: CUPS Raw 모드 프린터 설정 간소화
+## 업데이트 정보 

@@ -1,0 +1,15 @@
+[Unit]
+Description=Moya Worklog Printer Service
+After=network.target usb_modeswitch.service
+Wants=usb_modeswitch.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/moya-worklog
+ExecStart=/home/pi/moya-worklog/venv-64bit/bin/python /home/pi/moya-worklog/print_sam4s_production.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

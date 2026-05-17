@@ -1,0 +1,23 @@
+# 프린터
+python-escpos>=2.2.0
+pyusb>=1.2.1
+
+# GPIO
+RPi.GPIO>=0.7.0
+gpiozero>=1.6.2
+spidev>=3.5
+
+# 이미지 처리
+Pillow>=9.1.1
+
+# 바코드/QR
+python-barcode>=0.14.0
+qrcode>=7.3.1
+
+# 직렬 통신
+pyserial>=3.5
+
+# 유틸
+setuptools>=65.0.0
+requests>=2.31.0
+PyYAML>=6.0
