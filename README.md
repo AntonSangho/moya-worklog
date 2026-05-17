@@ -58,12 +58,27 @@
 ### 🆕 Raspberry Pi 3/4 (64-bit) + Sam4s Giant 100 (권장)
 
 **지원 환경**: Raspberry Pi OS 64-bit Lite (Bookworm)  
-**특징**: 폴링 방식, 향상된 안정성, systemd 서비스 지원
+**특징**: 스레드 방식, 이미지 캐싱, USB 자동 재연결, systemd 서비스
 
-1. **라즈베리파이 이미지 준비**
-   - Raspberry Pi OS 64-bit Lite (최신 버전)
-   - SSH 활성화
-   
+1. **라즈베리파이 이미지 굽기 (Raspberry Pi Imager)**
+
+   [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 다운로드 후 실행
+
+   - OS 선택: `Raspberry Pi OS (other)` → `Raspberry Pi OS Lite (64-bit)`
+   - Storage 선택: SD카드 선택
+
+   **OS Customisation 에서 반드시 설정 (NEXT 클릭 후 Edit Settings):**
+
+   | 항목 | 설정값 |
+   |------|--------|
+   | hostname | `raspberrypi` |
+   | username | `pi` |
+   | password | 원하는 비밀번호 |
+   | SSH | Enable (Use password authentication) |
+
+   > ⚠️ username을 `pi` 이외의 값으로 설정하면 서비스 파일 경로(`/home/pi/...`)와  
+   > 맞지 않아 실행 오류가 발생합니다. username은 반드시 `pi`로 설정하세요.
+
 2. **GPIO 활성화** (중요!)
    ```bash
    sudo raspi-config nonint do_spi 0
