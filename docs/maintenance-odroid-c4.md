@@ -22,94 +22,125 @@
 
 [BCM numbering](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#about_bcm_numbering)
 
+---
+
 ## 설치 방법 (Odroid C4 + Sam4s Giant 100)
 
-1. [Ubuntu Minimal 20.04 image](https://dn.odroid.com/S905X3/ODROID-C4/Ubuntu/ubuntu-20.04-4.9-mate-odroid-c4-hc4-20220228.img.xz) 다운로드
+**지원 환경**: Ubuntu 22.04 Minimal  
+**기본 계정**: `root` / `odroid`
 
-2. [UART 통신으로 IP 확인 후 SSH 접속](https://wiki.odroid.com/accessory/development/usb_uart_kit#usb-uart_kit)
-   - id: `root`
-   - password: `odroid`
+### 1. OS 이미지 굽기
 
-3. [nmcli로 WiFi 연결](https://wiki.odroid.com/troubleshooting/minimal_image_wifi_setup_nmcli#check_if_your_wifi_module_enabled)
-   ```bash
-   nmcli device
-   nmcli radio wifi on
-   nmcli device wifi list
-   nmcli device wifi connect "SSID" password "PASSWORD"
-   ```
+[Ubuntu 22.04 Minimal Images](https://wiki.odroid.com/odroid-c4/os_images/ubuntu#ubuntu_2204_minimal_images) 에서 이미지 다운로드 후 SD카드에 굽기
 
-4. 기본 설정
-   ```bash
-   sudo passwd
-   sudo apt-get update && sudo apt-get upgrade
-   ```
+### 2. UART로 IP 확인 후 SSH 접속
 
-5. 개발환경 설치
-   ```bash
-   sudo apt-get install python3-dev python3-pip cups escpos libcups2-dev
-   ```
+[USB-UART 키트](https://wiki.odroid.com/accessory/development/usb_uart_kit#usb-uart_kit) 연결 후:
 
-6. [Odroid용 RPi.GPIO 설치](https://wiki.odroid.com/odroid-xu4/application_note/gpio/rpi.gpio#rpigpio_for_odroid)
-   ```bash
-   git clone https://github.com/awesometic/RPi.GPIO-Odroid
-   cd RPi.GPIO-Odroid
-   sudo python setup.py build install
-   ```
+```bash
+screen /dev/ttyUSB0 115200
+```
 
-7. 프로젝트 다운로드
-   ```bash
-   git clone --recurse-submodules https://github.com/AntonSangho/moya-worklog.git
-   cd moya-worklog/legacy/odroid
-   pip install -r requirements.txt
-   ```
+부팅 로그에서 IP 확인 → SSH 접속:
 
-8. [리셋 버튼 설치](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini)
+```bash
+ssh root@<IP주소>
+# password: odroid
+```
 
-   `/media/boot/boot.ini`에 추가:
-   ```
-   ### in case of GPIOX.3 (Pin 11) of 2x20 pins connector
-   setenv gpiopower "479"
-   setenv bootargs ${bootargs} gpiopower=${gpiopower}
-   ```
+### 3. WiFi 연결 (선택)
 
-9. Python 가상환경 및 패키지 설치
+```bash
+nmcli device
+nmcli radio wifi on
+nmcli device wifi list
+nmcli device wifi connect "SSID" password "PASSWORD"
+```
 
-   ```bash
-   python3 -m venv /root/moya-worklog/venv-odroid
-   source /root/moya-worklog/venv-odroid/bin/activate
-   pip install --upgrade pip
-   pip install -r legacy/odroid/requirements.txt
-   ```
+### 4. 기본 설정
 
-   RPi.GPIO-Odroid 설치 (표준 RPi.GPIO 대체):
-   ```bash
-   pip uninstall -y RPi.GPIO
-   git clone https://github.com/awesometic/RPi.GPIO-Odroid /tmp/RPi.GPIO-Odroid
-   cd /tmp/RPi.GPIO-Odroid
-   CFLAGS=-fcommon python setup.py build install
-   ```
+```bash
+apt-get update && apt-get upgrade -y
+apt-get install -y git python3-dev python3-pip python3-venv libusb-1.0-0-dev build-essential
+```
 
-10. systemd 서비스 등록 (부팅 자동 실행)
+### 5. 프로젝트 다운로드
 
-    ```bash
-    cp legacy/odroid/moya-printer-odroid.service /etc/systemd/system/
-    systemctl daemon-reload
-    systemctl enable moya-printer-odroid.service
-    systemctl start moya-printer-odroid.service
-    ```
+```bash
+git clone https://github.com/AntonSangho/moya-worklog.git /root/moya-worklog
+cd /root/moya-worklog
+```
 
-    상태 확인:
-    ```bash
-    systemctl status moya-printer-odroid.service
-    journalctl -u moya-printer-odroid.service -f
-    ```
+### 6. RPi.GPIO-Odroid 빌드 설치
 
-## 실행
+표준 RPi.GPIO는 Odroid에서 동작하지 않으므로 Odroid 전용 버전을 설치한다.
+
+```bash
+git clone https://github.com/awesometic/RPi.GPIO-Odroid /tmp/RPi.GPIO-Odroid
+cd /tmp/RPi.GPIO-Odroid
+CFLAGS=-fcommon python3 setup.py build install
+cd /root/moya-worklog
+```
+
+> `-fcommon` 플래그는 Ubuntu 22.04의 GCC 11에서 발생하는 multiple definition 빌드 오류를 해결한다.
+
+### 7. Python 가상환경 및 패키지 설치
+
+```bash
+python3 -m venv /root/moya-worklog/venv-odroid
+source /root/moya-worklog/venv-odroid/bin/activate
+pip install --upgrade pip
+pip install -r legacy/odroid/requirements.txt
+
+# 가상환경에도 RPi.GPIO-Odroid 설치
+pip uninstall -y RPi.GPIO
+cd /tmp/RPi.GPIO-Odroid
+CFLAGS=-fcommon python setup.py build install
+cd /root/moya-worklog
+```
+
+### 8. 리셋 버튼 설정
+
+[GPIO Key Wakeup 가이드](https://wiki.odroid.com/odroid-c4/application_note/gpio/gpio_key_wakeup#sw_set-up_using_bootini) 참고
+
+`/media/boot/boot.ini`의 `# Load kernel` 라인 앞에 추가:
+
+```bash
+sed -i '/^# Load kernel/i # Reset button (GPIO11 = pin 479)\nsetenv gpiopower "479"\nsetenv bootargs ${bootargs} gpiopower=${gpiopower}\n' /media/boot/boot.ini
+```
+
+재부팅 후 적용:
+
+```bash
+reboot
+```
+
+### 9. systemd 서비스 등록 (부팅 자동 실행)
+
+```bash
+cp /root/moya-worklog/legacy/odroid/moya-printer-odroid.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable moya-printer-odroid.service
+systemctl start moya-printer-odroid.service
+```
+
+상태 확인:
+
+```bash
+systemctl status moya-printer-odroid.service
+journalctl -u moya-printer-odroid.service -f
+```
+
+---
+
+## 실행 (수동)
 
 ```bash
 source /root/moya-worklog/venv-odroid/bin/activate
-python3 legacy/odroid/print_odroid.py
+python3 /root/moya-worklog/legacy/odroid/print_odroid.py
 ```
+
+---
 
 ## 관련 파일
 
