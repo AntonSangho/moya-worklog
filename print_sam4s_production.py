@@ -1,103 +1,115 @@
 #!/usr/bin/env python3
 """
-Sam4s Giant 100 프린터 제어 스크립트 (최종 프로덕션 버전)
-64-bit Raspberry Pi OS + 인터럽트 방식
+Sam4s Giant 100 프린터 제어 스크립트
+64-bit Raspberry Pi OS — 스레드 방식, 이미지 캐싱, USB 자동 재연결
 """
 
-import RPi.GPIO as GPIO
-import time
+import logging
 import os
 import random
-import logging
 import threading
+import time
 from logging.handlers import RotatingFileHandler
+from typing import Optional
+
+import RPi.GPIO as GPIO
 from escpos.printer import Usb
 from PIL import Image
 
-# 개선 1: RotatingFileHandler - 1MB 초과 시 rotation, 최대 3개 보관
+# ── 로깅 ──────────────────────────────────────────────────────────────────────
+# force=True: escpos import 시 설정된 핸들러를 덮어씀 (issue #16)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        RotatingFileHandler('/home/pi/moya-worklog/printer.log', maxBytes=1*1024*1024, backupCount=3),
-        logging.StreamHandler()
+        RotatingFileHandler(
+            "/home/pi/moya-worklog/printer.log",
+            maxBytes=1 * 1024 * 1024,
+            backupCount=3,
+        ),
+        logging.StreamHandler(),
     ],
-    force=True
+    force=True,
 )
 logger = logging.getLogger(__name__)
 
-# GPIO 핀 설정
-# GPIO2(SDA)는 하드웨어 풀업 내장으로 사용 불가 → GPIO4(Physical 7번)로 변경
-BUTTON_PIN = 4  # 출력 버튼
-LED_PIN = 20    # 상태 LED
+# ── 설정 ──────────────────────────────────────────────────────────────────────
+# GPIO2(SDA)는 하드웨어 풀업 내장 → GPIO4(Physical 7번) 사용
+BUTTON_PIN: int = 4
+LED_PIN: int = 20
 
-# 프린터 설정
-VENDOR_ID = 0x1c8a
-PRODUCT_ID = 0x3a0e
-IN_EP = 0x81
-OUT_EP = 0x02
+VENDOR_ID: int = 0x1C8A
+PRODUCT_ID: int = 0x3A0E
+IN_EP: int = 0x81
+OUT_EP: int = 0x02
 
-# 이미지 설정
-IMAGE_DIR = "/home/pi/moya-worklog/image"
-IMAGE_FILES = [
+IMAGE_DIR: str = "/home/pi/moya-worklog/image"
+IMAGE_FILES: list[str] = [
     f"{IMAGE_DIR}/w1_2022.png",
     f"{IMAGE_DIR}/w2_2022.png",
     f"{IMAGE_DIR}/w3_2022.png",
     f"{IMAGE_DIR}/w4_2022.png",
-    f"{IMAGE_DIR}/w5_2022.png"
+    f"{IMAGE_DIR}/w5_2022.png",
 ]
 
-# 전역 변수
-printer_instance = None
-count = 0
-last_print_time = 0
-image_cache = {}  # 개선 2: 시작 시 사전 로드된 이미지 캐시
-_stop_event = threading.Event()  # 개선 4: 버튼 감시 스레드 종료 신호
-_print_lock = threading.Lock()   # 동시 출력 방지
+DEBOUNCE_SEC: float = 2.0
+BUTTON_POLL_SEC: float = 0.05
+RECONNECT_WAIT_SEC: float = 2.0
+MAX_RECONNECT: int = 3
+
+# ── 전역 상태 ─────────────────────────────────────────────────────────────────
+printer: Optional[Usb] = None
+image_cache: dict[str, Image.Image] = {}
+print_count: int = 0
+last_print_time: float = 0.0
+_print_lock = threading.Lock()
+_stop_event = threading.Event()
 
 
-def setup_printer():
-    global printer_instance
+# ── 프린터 ────────────────────────────────────────────────────────────────────
+
+def connect_printer() -> bool:
+    global printer
     try:
-        printer_instance = Usb(VENDOR_ID, PRODUCT_ID, in_ep=IN_EP, out_ep=OUT_EP)
-        logger.info("✅ Sam4s Giant 100 프린터 연결 성공")
+        printer = Usb(VENDOR_ID, PRODUCT_ID, in_ep=IN_EP, out_ep=OUT_EP)
+        logger.info("✅ 프린터 연결 성공")
         return True
     except Exception as e:
         logger.error(f"❌ 프린터 연결 실패: {e}")
         return False
 
 
-def reconnect_printer():
-    """개선 3: USB 프린터 자동 재연결 (최대 3회 시도)"""
-    global printer_instance
-    for attempt in range(1, 4):
-        logger.info(f"🔄 프린터 재연결 시도 {attempt}/3")
+def reconnect_printer() -> bool:
+    """출력 오류 후 최대 MAX_RECONNECT회 재연결 시도"""
+    global printer
+    for attempt in range(1, MAX_RECONNECT + 1):
+        logger.info(f"🔄 프린터 재연결 시도 {attempt}/{MAX_RECONNECT}")
         try:
-            if printer_instance:
+            if printer:
                 try:
-                    printer_instance.close()
+                    printer.close()
                 except Exception:
                     pass
-            time.sleep(2)
-            printer_instance = Usb(VENDOR_ID, PRODUCT_ID, in_ep=IN_EP, out_ep=OUT_EP)
+            time.sleep(RECONNECT_WAIT_SEC)
+            printer = Usb(VENDOR_ID, PRODUCT_ID, in_ep=IN_EP, out_ep=OUT_EP)
             logger.info("✅ 프린터 재연결 성공")
             return True
         except Exception as e:
-            logger.error(f"❌ 재연결 실패 ({attempt}/3): {e}")
+            logger.error(f"❌ 재연결 실패 ({attempt}/{MAX_RECONNECT}): {e}")
     logger.error("❌ 프린터 재연결 포기")
     return False
 
 
-def preload_images():
-    """개선 2: 시작 시 이미지 전처리 및 캐싱"""
-    global image_cache
+# ── 이미지 ────────────────────────────────────────────────────────────────────
+
+def preload_images() -> int:
+    """시작 시 이미지 전처리 및 메모리 캐싱 — 버튼 응답 속도 향상"""
     loaded = 0
     for path in IMAGE_FILES:
         if os.path.exists(path):
             try:
-                img = Image.open(path).resize((480, 1000))
-                image_cache[path] = img
-                logger.info(f"🖼️ 이미지 캐시 완료: {os.path.basename(path)}")
+                image_cache[path] = Image.open(path).resize((480, 1000))
+                logger.info(f"🖼️  캐시: {os.path.basename(path)}")
                 loaded += 1
             except Exception as e:
                 logger.error(f"이미지 캐시 실패 {os.path.basename(path)}: {e}")
@@ -105,110 +117,103 @@ def preload_images():
     return loaded
 
 
-def setup_gpio():
-    """GPIO 초기화 + 개선 4: 백그라운드 스레드로 버튼 감시"""
+# ── 출력 ──────────────────────────────────────────────────────────────────────
+
+def print_output() -> None:
+    global print_count, last_print_time
+
+    if not _print_lock.acquire(blocking=False):
+        return
+
+    try:
+        now = time.time()
+        if now - last_print_time < DEBOUNCE_SEC:
+            return
+        last_print_time = now
+        print_count += 1
+
+        logger.info(f"🖨️  출력 시작 #{print_count}")
+        _blink_led(times=3)
+
+        if image_cache and printer:
+            path = random.choice(list(image_cache.keys()))
+            logger.info(f"📸 선택: {os.path.basename(path)}")
+            printer.image(image_cache[path])
+            printer.cut()
+            logger.info(f"✅ 출력 완료 #{print_count}")
+        elif printer:
+            _print_text()
+        else:
+            logger.error("❌ 프린터 미연결")
+
+        GPIO.output(LED_PIN, GPIO.HIGH)
+
+    except Exception as e:
+        logger.error(f"❌ 출력 오류 #{print_count}: {e} ({type(e).__name__})")
+        GPIO.output(LED_PIN, GPIO.HIGH)
+        if any(kw in str(e).lower() for kw in ("usb", "pipe", "errno")):
+            reconnect_printer()
+    finally:
+        _print_lock.release()
+
+
+def _blink_led(times: int) -> None:
+    for _ in range(times):
+        GPIO.output(LED_PIN, GPIO.LOW)
+        time.sleep(0.1)
+        GPIO.output(LED_PIN, GPIO.HIGH)
+        time.sleep(0.1)
+
+
+def _print_text() -> None:
+    logger.info("📝 텍스트 출력 모드")
+    lines = [
+        f"=== Print #{print_count} ===\n",
+        "Sam4s Giant 100\n",
+        f"시간: {time.strftime('%Y-%m-%d %H:%M:%S')}\n",
+        f"총 출력: {print_count}회\n",
+        "=" * 30 + "\n",
+    ]
+    for line in lines:
+        printer.text(line)
+    printer.cut()
+    logger.info(f"✅ 텍스트 출력 완료 #{print_count}")
+
+
+# ── GPIO ──────────────────────────────────────────────────────────────────────
+
+def setup_gpio() -> bool:
     try:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-
         GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(LED_PIN, GPIO.OUT)
         GPIO.output(LED_PIN, GPIO.HIGH)
-
-        logger.info(f"✅ GPIO 설정 완료 - 스레드 방식 (BUTTON=GPIO{BUTTON_PIN}, LED=GPIO{LED_PIN})")
+        logger.info(f"✅ GPIO 설정 완료 (BUTTON=GPIO{BUTTON_PIN}, LED=GPIO{LED_PIN})")
         return True
     except Exception as e:
         logger.error(f"❌ GPIO 설정 실패: {e}")
         return False
 
 
-def button_watcher():
-    """개선 4: 백그라운드 스레드에서 버튼 감시 (50ms 간격)
-    메인 루프 대신 별도 스레드가 담당 → 메인은 sleep만 하여 CPU 점유 최소화
-    """
+def button_watcher() -> None:
+    """버튼 감시 데몬 스레드 — 50ms 간격 폴링, Rising Edge 감지"""
     last_state = GPIO.LOW
     while not _stop_event.is_set():
         try:
             state = GPIO.input(BUTTON_PIN)
             if state == GPIO.HIGH and last_state == GPIO.LOW:
-                logger.info("🔘 버튼 눌림 감지! (스레드)")
+                logger.info("🔘 버튼 눌림")
                 print_output()
             last_state = state
         except Exception as e:
             logger.error(f"버튼 읽기 오류: {e}")
-        time.sleep(0.05)  # 50ms
+        time.sleep(BUTTON_POLL_SEC)
 
 
-def print_output():
-    global count, last_print_time
-
-    # Lock으로 동시 출력 방지 (스레드 안전)
-    if not _print_lock.acquire(blocking=False):
-        logger.debug("출력 중: 요청 무시")
-        return
-
+def cleanup() -> None:
+    _stop_event.set()
     try:
-        current_time = time.time()
-        if current_time - last_print_time < 2.0:
-            logger.debug("디바운싱: 출력 요청 무시")
-            return
-        last_print_time = current_time
-        count += 1
-    except Exception:
-        _print_lock.release()
-        return
-
-    try:
-        logger.info(f"🖨️ 출력 시작 #{count}")
-
-        for i in range(3):
-            GPIO.output(LED_PIN, GPIO.LOW)
-            time.sleep(0.1)
-            GPIO.output(LED_PIN, GPIO.HIGH)
-            time.sleep(0.1)
-
-        if image_cache and printer_instance:
-            # 개선 2: 캐시에서 이미지 선택 (디스크 I/O 없음)
-            selected_file = random.choice(list(image_cache.keys()))
-            logger.info(f"📸 캐시에서 이미지 선택: {os.path.basename(selected_file)}")
-            printer_instance.image(image_cache[selected_file])
-            printer_instance.cut()
-            logger.info(f"✅ 이미지 출력 완료 #{count}")
-
-        elif printer_instance:
-            logger.info("📝 텍스트 출력 모드 (캐시된 이미지 없음)")
-            text_content = [
-                f"=== Test Print #{count} ===\n",
-                "Sam4s Giant 100\n",
-                "64-bit Raspberry Pi OS\n",
-                f"시간: {time.strftime('%Y-%m-%d %H:%M:%S')}\n",
-                f"총 출력 횟수: {count}\n",
-                "=" * 30 + "\n"
-            ]
-            for line in text_content:
-                printer_instance.text(line)
-            printer_instance.cut()
-            logger.info(f"✅ 텍스트 출력 완료 #{count}")
-
-        else:
-            logger.error("❌ 프린터가 연결되지 않음")
-
-        GPIO.output(LED_PIN, GPIO.HIGH)
-
-    except Exception as e:
-        logger.error(f"❌ 출력 오류 #{count}: {e} ({type(e).__name__})")
-        GPIO.output(LED_PIN, GPIO.HIGH)
-        # 개선 3: USB 에러 시 자동 재연결
-        if "usb" in str(e).lower() or "pipe" in str(e).lower() or "errno" in str(e).lower():
-            reconnect_printer()
-
-    finally:
-        _print_lock.release()
-
-
-def cleanup():
-    try:
-        _stop_event.set()  # 버튼 감시 스레드 종료
         GPIO.output(LED_PIN, GPIO.LOW)
         GPIO.cleanup()
         logger.info("🧹 GPIO 정리 완료")
@@ -216,54 +221,44 @@ def cleanup():
         logger.error(f"정리 오류: {e}")
 
 
-def main():
-    logger.info("🚀 Sam4s Giant 100 프린터 서비스 시작 (인터럽트 방식)")
-    logger.info("=" * 60)
-    logger.info(f"작업 디렉토리: {os.getcwd()}")
-    logger.info(f"사용자: {os.getenv('USER', 'unknown')}")
-    logger.info(f"Python: {os.sys.version.split()[0]}")
+# ── 진입점 ────────────────────────────────────────────────────────────────────
 
-    logger.info("1/3: 프린터 초기화")
-    if not setup_printer():
-        logger.error("❌ 프린터 초기화 실패 - 서비스 종료")
+def main() -> None:
+    logger.info("🚀 Sam4s 프린터 서비스 시작")
+    logger.info("=" * 60)
+    logger.info(f"사용자: {os.getenv('USER', 'unknown')}  Python: {os.sys.version.split()[0]}")
+
+    if not connect_printer():
+        logger.error("프린터 초기화 실패 — 종료")
         return
 
-    logger.info("2/3: 이미지 사전 캐싱")
     preload_images()
 
-    logger.info("3/3: GPIO 초기화")
     if not setup_gpio():
-        logger.error("❌ GPIO 초기화 실패 - 서비스 종료")
+        logger.error("GPIO 초기화 실패 — 종료")
         cleanup()
         return
 
-    logger.info("=" * 60)
-    logger.info("✅ 모든 초기화 완료!")
-    logger.info(f"🔘 버튼(GPIO {BUTTON_PIN})을 누르면 출력됩니다")
-    logger.info("📊 60초마다 상태 정보 출력")
-    logger.info("⏹️ 종료하려면 Ctrl+C를 누르세요")
-    logger.info("=" * 60)
-
-    # 개선 4: 버튼 감시를 백그라운드 스레드로 분리
-    watcher = threading.Thread(target=button_watcher, daemon=True)
+    watcher = threading.Thread(target=button_watcher, daemon=True, name="ButtonWatcher")
     watcher.start()
-    logger.info("🧵 버튼 감시 스레드 시작")
+
+    logger.info("=" * 60)
+    logger.info(f"✅ 준비 완료 — GPIO{BUTTON_PIN} 버튼을 누르면 출력")
+    logger.info("=" * 60)
 
     heartbeat = 0
     try:
-        # 메인 루프는 heartbeat만 담당 - CPU 점유 없음
         while True:
             time.sleep(60)
             heartbeat += 1
-            logger.info(f"💓 서비스 실행 중... (heartbeat #{heartbeat}, 총 출력: {count}회)")
-
+            logger.info(f"💓 heartbeat #{heartbeat}  총 출력: {print_count}회")
     except KeyboardInterrupt:
-        logger.info("⏹️ 사용자에 의해 종료")
+        logger.info("사용자 종료")
     except Exception as e:
-        logger.error(f"❌ 런타임 오류: {e} ({type(e).__name__})")
+        logger.error(f"런타임 오류: {e} ({type(e).__name__})")
     finally:
         cleanup()
-        logger.info("🏁 Sam4s 프린터 서비스 종료")
+        logger.info("🏁 서비스 종료")
 
 
 if __name__ == "__main__":

@@ -3,10 +3,11 @@
 라즈베리파이와 같은 리눅스 소형 컴퓨터로 특정 파일을 영수증 프린트를 통해 출력하는 장치.  
 
 ## Wiring 
-# Raspberry Pi4
-<img src="/Schematic/Wiring_v1.jpg" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>. 
+# Raspberry Pi
+<img src="/hardware/schematic/Wiring_v1.jpg" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
+
 # Odroid C4
-<img src="/Schematic/moya-worklog_OdroidC4_v1_bb.png" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
+<img src="/hardware/schematic/moya-worklog_OdroidC4_v1_bb.png" width="40%" height="30%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
 
 ## Pin Map 
 ### Raspberry Pi
@@ -290,14 +291,24 @@ setenv bootargs ${bootargs} gpiopower=${gpiopower}
 6. 해상도: 고(300ppi) / 앤티 앨리어싱: 아트최적화 / 배경색: 흰색 
 7. 확인 
 
-## 파일 정보 및 목록 
-- **print_sam4s_production.py** : 64-bit 최신 버전 (스레드 방식, 이미지 캐싱, USB 자동 재연결)
-- **print_sam4s.py** : 32-bit 레거시 버전 (인터럽트 방식)
-- **print_Bixolon.py** : Bixolon 프린터용
-- **requirements-64bit.txt** : 64-bit 환경 패키지 목록
-- **requirements.txt** : 32-bit 환경 패키지 목록
-- 출력이미지 : `/image/` 디렉토리
-- 프린터 드라이버 : `/Driver/` 디렉토리
+## 파일 정보 및 목록
+
+```
+moya-worklog/
+├── print_sam4s_production.py  # 64-bit 최신 (스레드, 이미지 캐싱, USB 자동 재연결)
+├── print_Bixolon.py           # Bixolon 프린터용
+├── moya-printer.service       # systemd 서비스 파일
+├── requirements-64bit.txt     # 64-bit 환경 패키지
+├── requirements.txt           # 32-bit 레거시 패키지
+├── image/                     # 출력 이미지 (PNG)
+├── hardware/
+│   ├── schematic/             # 회로도, 배선도
+│   └── drawing/               # 기구 도면
+├── Driver/                    # 프린터 드라이버
+├── legacy/                    # 구버전 코드 (Odroid, 32-bit)
+│   └── odroid/
+└── pi-power-button/           # 전원 버튼 스크립트
+```
 
 ## 시스템 요구사항
 

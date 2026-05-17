@@ -1,23 +1,23 @@
-appdirs>=1.4.4
-argcomplete>=2.0.0
-certifi>=2023.7.22
-chardet>=4.0.0
-colorzero>=1.1
-distro>=1.5.0
-escpos>=1.9
-future>=0.18.2
-gpiozero>=1.6.2
-idna>=2.10
-Pillow>=9.1.1
-pycups>=2.0.1
-pyserial>=3.5
-python-barcode>=0.14.0
+# 프린터
 python-escpos>=2.2.0
 pyusb>=1.2.1
-PyYAML>=6.0
-qrcode>=7.3.1
-requests>=2.31.0
+
+# GPIO
 RPi.GPIO>=0.7.0
-six>=1.16.0
+gpiozero>=1.6.2
 spidev>=3.5
-urllib3>=1.26.5
+
+# 이미지 처리
+Pillow>=9.1.1
+
+# 바코드/QR
+python-barcode>=0.14.0
+qrcode>=7.3.1
+
+# 직렬 통신
+pyserial>=3.5
+
+# 유틸
+setuptools>=65.0.0
+requests>=2.31.0
+PyYAML>=6.0
