@@ -8,6 +8,8 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/moya-worklog
 ExecStart=/home/pi/moya-worklog/venv-64bit/bin/python /home/pi/moya-worklog/print_sam4s_production.py
+# 시작 전 기존 프로세스 종료 (수동 실행 중복 방지)
+ExecStartPre=/bin/bash -c "pkill -f print_sam4s_production.py || true"
 Restart=always
 RestartSec=5
 
