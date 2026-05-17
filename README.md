@@ -178,6 +178,152 @@ moya-worklog/
 
 ---
 
+## 문제 확인 프로세스
+
+하드웨어 문제와 소프트웨어 문제를 단계적으로 분리한다.
+
+```
+[1] 전원 연결 → PWR LED(빨강) 점등?
+        │ NO  → 전원 어댑터/케이블 점검 (HW)
+        │ YES
+        ↓
+[2] ACT LED(녹색) 깜박임?
+        │ NO  → SD카드 불량 또는 OS 손상 (HW)
+        │ YES
+        ↓
+[3] SSH 접속 가능?
+        │ NO  → 네트워크 설정 확인 (SW)
+        │ YES
+        ↓
+[4] 서비스 실행 중?
+        │ NO  → 서비스 재시작 (SW)
+        │ YES
+        ↓
+[5] 프린터 USB 인식?
+        │ NO  → USB 케이블/프린터 점검 (HW)
+        │ YES
+        ↓
+[6] 버튼 LED 점등 + 버튼 동작?
+        │ NO  → GPIO 배선/설정 점검 (HW/SW)
+        │ YES
+        ↓
+    정상 동작
+```
+
+---
+
+### 1단계 — 전원 확인 (HW)
+
+라즈베리파이 3A+는 **Micro USB 5V 2.5A** 어댑터로 전원을 공급한다.
+
+- 빨간 **PWR LED** 점등 확인
+- 미점등 시: 어댑터 규격 확인 (5V / 2.5A 이상), 케이블 단선 확인
+
+---
+
+### 2단계 — 부팅 확인 (HW/SW)
+
+| 증상 | 원인 | 조치 |
+|------|------|------|
+| PWR만 켜지고 ACT 없음 | SD카드 미삽입 또는 불량 | SD카드 재삽입 또는 OS 재설치 |
+| ACT 깜박이다 멈춤 | OS 손상 또는 파일시스템 오류 | OS 재설치 |
+| ACT 규칙적으로 깜박임 | 정상 부팅 중 | 30초 대기 후 3단계로 |
+
+---
+
+### 3단계 — SSH 접속 확인 (SW)
+
+```bash
+ssh pi@raspberrypi.local
+# 또는 IP로 직접 접속
+ssh pi@<IP주소>
+```
+
+| 증상 | 원인 | 조치 |
+|------|------|------|
+| `Connection refused` | SSH 미활성화 또는 부팅 미완료 | 30초 더 대기 후 재시도 |
+| `Host not found` | 네트워크 미연결 | LAN 케이블 또는 WiFi 확인 |
+| 비밀번호 오류 | 이미지 굽기 시 설정값 확인 | Raspberry Pi Imager로 재설치 |
+
+---
+
+### 4단계 — 서비스 확인 (SW)
+
+```bash
+sudo systemctl status moya-printer.service
+```
+
+| 상태 | 조치 |
+|------|------|
+| `active (running)` | 정상, 5단계로 |
+| `failed` | 로그 확인 후 재시작 |
+| `inactive` | `sudo systemctl start moya-printer.service` |
+
+로그 확인:
+
+```bash
+journalctl -u moya-printer.service -n 50
+```
+
+서비스 재시작:
+
+```bash
+sudo systemctl restart moya-printer.service
+```
+
+---
+
+### 5단계 — 프린터 USB 확인 (HW/SW)
+
+```bash
+lsusb | grep 1c8a
+```
+
+- 출력 있음 (`1c8a:3a0e`) → 정상, 6단계로
+- 출력 없음 → 아래 순서로 점검:
+
+1. 프린터 전원 ON 확인
+2. USB 케이블 재연결
+3. `dmesg | tail -20` 으로 USB 인식 오류 확인
+
+서비스 재시작으로 프린터 재연결:
+
+```bash
+sudo systemctl restart moya-printer.service
+```
+
+---
+
+### 6단계 — 버튼 동작 확인 (HW/SW)
+
+서비스가 시작되면 GPIO20 LED가 켜진다. LED가 꺼져 있으면 서비스 이상이다.
+
+**프린트 버튼 GPIO 직접 테스트:**
+
+```bash
+source ~/moya-worklog/venv-64bit/bin/activate
+python3 -c "
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+print('버튼 상태:', GPIO.input(4))
+GPIO.cleanup()
+"
+```
+
+버튼을 누른 채로 실행하면 `1`, 떼면 `0`이 출력되어야 한다.
+
+> **주의**: GPIO2(SDA), GPIO3(SCL)는 하드웨어 풀업이 내장되어 항상 `1`을 반환한다.  
+> 프린트 버튼은 반드시 **GPIO4** 에 연결한다.
+
+| 결과 | 원인 | 조치 |
+|------|------|------|
+| 항상 `0` | 정상 (미입력) | 버튼 누르면서 재테스트 |
+| 항상 `1` | GPIO2/3 연결 또는 배선 쇼트 | GPIO4 핀으로 재연결 |
+| 버튼 눌러도 변화 없음 | 배선 오류 | 핀맵 재확인 |
+
+---
+
 ## 업데이트 이력
 
 - **2026.05 (v2.0.0)**: Odroid C4 → Raspberry Pi 3 이식, 성능/안정성 대폭 개선
