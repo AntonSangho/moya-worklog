@@ -1,0 +1,14 @@
+[Unit]
+Description=Moya Worklog Printer Service (Odroid C4)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/moya-worklog
+ExecStart=/root/moya-worklog/venv-odroid/bin/python /root/moya-worklog/legacy/odroid/print_odroid.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
