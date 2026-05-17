@@ -16,7 +16,7 @@
 | Reset Button Active | GND |
 | Power LED Positive | 6 |
 | Power LED Negative | GND |
-| Print Button GPIO | 2 |
+| Print Button GPIO | 4 |
 | Print Button LED | 20 |
 
 [GPIO](https://pinout.xyz/)
@@ -135,26 +135,16 @@
 
 11. **부팅시 자동 시작 설정**
     ```bash
-    sudo tee /etc/systemd/system/sam4s-printer.service << EOF
-    [Unit]
-    Description=Sam4s Giant 100 Printer Service (64-bit)
-    After=network.target
+    sudo cp moya-printer.service /etc/systemd/system/moya-printer.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable moya-printer.service
+    sudo systemctl start moya-printer.service
+    ```
 
-    [Service]
-    Type=simple
-    User=anton
-    WorkingDirectory=/home/anton/moya-worklog
-    Environment=PATH=/home/anton/venv-64bit/bin:/usr/local/bin:/usr/bin:/bin
-    ExecStart=/home/anton/venv-64bit/bin/python /home/anton/moya-worklog/print_sam4s_production.py
-    Restart=always
-    RestartSec=5
-
-    [Install]
-    WantedBy=multi-user.target
-    EOF
-
-    sudo systemctl enable sam4s-printer.service
-    sudo systemctl start sam4s-printer.service
+    상태 확인:
+    ```bash
+    sudo systemctl status moya-printer.service
+    journalctl -u moya-printer.service -f
     ```
 
 ---
@@ -286,7 +276,7 @@ setenv bootargs ${bootargs} gpiopower=${gpiopower}
 7. 확인 
 
 ## 파일 정보 및 목록 
-- **print_sam4s_production.py** : 64-bit 최신 버전 (폴링 방식)
+- **print_sam4s_production.py** : 64-bit 최신 버전 (스레드 방식, 이미지 캐싱, USB 자동 재연결)
 - **print_sam4s.py** : 32-bit 레거시 버전 (인터럽트 방식)
 - **print_Bixolon.py** : Bixolon 프린터용
 - **requirements-64bit.txt** : 64-bit 환경 패키지 목록
@@ -302,7 +292,7 @@ setenv bootargs ${bootargs} gpiopower=${gpiopower}
 - **메모리**: 1GB 이상
 - **저장공간**: 8GB 이상
 - **Python**: 3.11 이상
-- **특징**: 폴링 방식, systemd 서비스, 향상된 안정성
+- **특징**: 스레드 방식, 이미지 캐싱, USB 자동 재연결, systemd 서비스
 
 ### 32-bit 버전 (레거시)
 - **하드웨어**: Raspberry Pi 3A+ 이상
@@ -321,8 +311,11 @@ sanghoemail@gmail.com
 - ~~불안정한 전원장치에 연결할 때 출력이 불규칙적으로 발생하는 문제~~ (64-bit 버전에서 해결)
 - 32-bit 버전에서 GPIO 인터럽트 간헐적 실패 (64-bit 폴링 방식으로 해결)
 
-## 업데이트 정보 
+## 업데이트 정보
+- **2026.05**: Odroid C4 → Raspberry Pi 3 이식 완료
+- **2026.05**: GPIO2(SDA) 하드웨어 풀업 문제 → GPIO4로 변경
+- **2026.05**: 스레드 방식 버튼 감지, 이미지 캐싱, USB 자동 재연결 추가
+- **2026.05**: systemd 서비스(`moya-printer.service`) 등록
 - **2025.08**: 64-bit Raspberry Pi OS 지원 추가
-- **2025.08**: 폴링 방식 GPIO 제어로 안정성 향상
 - **2025.08**: systemd 서비스 지원 추가
 - **2025.08**: CUPS Raw 모드 프린터 설정 간소화
